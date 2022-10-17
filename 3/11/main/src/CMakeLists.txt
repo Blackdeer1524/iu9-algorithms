@@ -1,0 +1,5 @@
+include_directories(../include)
+include_directories(${lib_include_dir})
+add_executable(${target_name} main.c)
+link_directories(${lib_path})
+message("lib path: " ${lib_path})
