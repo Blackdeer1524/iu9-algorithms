@@ -6,14 +6,14 @@
 
 typedef struct node  // структура для представления узлов дерева
 {
-    int key;
+    char *key;
     int height;
     node *left;
     node *right;
 } node;
 
 void print_tree(node *root, char *pref) {
-    printf("<%s> (k:%d, h:%d) ", pref, root->key, root->height);
+    printf("<%s> (k:%s, h:%d) ", pref, root->key, root->height);
     size_t pref_length = strlen(pref);
     if (root->left != NULL) {
         char *l_pref = malloc(sizeof (char) * (pref_length + 2));
@@ -58,9 +58,10 @@ void fixheight(node* p)
 }
 
 
-struct node *create_node(int key, int height) {
+struct node *create_node(char *key, int height) {
     struct node *leaf = malloc(sizeof (struct node));
-    leaf->key = key;
+    leaf->key = malloc(sizeof(char) * (strlen(key) + 1));
+    strcpy(leaf->key, key);
     leaf->left = NULL;
     leaf->right = NULL;
     leaf->height = height;
@@ -68,8 +69,8 @@ struct node *create_node(int key, int height) {
 }
 
 
-subtree_t insert(struct node *root, int item) {
-    int cmp = root->key - item;  // strcmp(root->key, item);
+subtree_t insert(struct node *root, char *item) {
+    int cmp = strcmp(root->key, item);  // strcmp(root->key, item);
     if (cmp == 0) {
         return 0;
     }

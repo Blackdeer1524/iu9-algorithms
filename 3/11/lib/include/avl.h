@@ -12,9 +12,9 @@ typedef enum {
 
 void print_tree(node *root, char *pref);
 
-struct node *create_node(int key, int height);
+struct node *create_node(char *key, int height);
 
-subtree_t insert(struct node *root, int item);
+subtree_t insert(struct node *root, char *item);
 
 
 #endif //IU_ALGOS_AVL_H
