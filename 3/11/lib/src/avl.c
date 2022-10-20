@@ -4,16 +4,19 @@
 
 #include "avl.h"
 
-typedef struct node  // структура для представления узлов дерева
-{
-    char *key;
+static int new_identifier_index = 0;
+
+typedef struct node {
+    char *identifier_name;
+    int identifier_value;
     int height;
     node *left;
     node *right;
 } node;
 
+
 void print_tree(node *root, char *pref) {
-    printf("<%s> (k:%s, h:%d) ", pref, root->key, root->height);
+    printf("<%s> (k:%s, i:%d, h:%d) ", pref, root->identifier_name, root->identifier_value, root->height);
     size_t pref_length = strlen(pref);
     if (root->left != NULL) {
         char *l_pref = malloc(sizeof (char) * (pref_length + 2));
@@ -34,20 +37,17 @@ void print_tree(node *root, char *pref) {
 }
 
 
-int height(node* p)
-{
-    return p ? p->height : -1;
+static int height(node* p) {
+    return (p == NULL) ? -1 : p->height;
 }
 
 
-int bfactor(node* p)
-{
+static int bfactor(node* p) {
     return height(p->right) - height(p->left);
 }
 
 
-void fixheight(node* p)
-{
+static void fixheight(node* p) {
     int hl = height(p->left);
     int hr = height(p->right);
     if (hl == -1 && hr == -1) {
@@ -58,10 +58,11 @@ void fixheight(node* p)
 }
 
 
-struct node *create_node(char *key, int height) {
+struct node *create_node(char *identifier_name, int height) {
     struct node *leaf = malloc(sizeof (struct node));
-    leaf->key = malloc(sizeof(char) * (strlen(key) + 1));
-    strcpy(leaf->key, key);
+    leaf->identifier_name = malloc(sizeof(char) * (strlen(identifier_name) + 1));
+    strcpy(leaf->identifier_name, identifier_name);
+    leaf->identifier_value = new_identifier_index++;
     leaf->left = NULL;
     leaf->right = NULL;
     leaf->height = height;
@@ -69,20 +70,34 @@ struct node *create_node(char *key, int height) {
 }
 
 
-subtree_t insert(struct node *root, char *item) {
-    int cmp = strcmp(root->key, item);  // strcmp(root->key, item);
-    if (cmp == 0) {
-        return 0;
+int get(struct node *root, char *identifier_name) {
+    if (root == NULL) {
+        return -1;
     }
 
-    if (cmp > 0) {
+    int cmp = strcmp(root->identifier_name, identifier_name);
+    if (cmp == 0) {
+        return root->identifier_value;
+    } else if (cmp < 0) {
+        return get(root->right, identifier_name);
+    } else {
+        return get(root->left, identifier_name);
+    }
+}
+
+
+subtree_t insert(struct node *root, char *identifier_name) {
+    int cmp = strcmp(root->identifier_name, identifier_name);
+    if (cmp == 0) {
+        return NO_INSERT;
+    } else if (cmp > 0) {
         // L
         if (root->left == NULL) {
-            root->left = create_node(item, 0);
+            root->left = create_node(identifier_name, 0);
             fixheight(root);
             return LEFT_T;
         }
-        subtree_t insertion_direction = insert(root->left, item);
+        subtree_t insertion_direction = insert(root->left, identifier_name);
         fixheight(root);
         int balancing_factor = bfactor(root);
         if (-2 < balancing_factor && balancing_factor < 2) {
@@ -139,11 +154,11 @@ subtree_t insert(struct node *root, char *item) {
     } else if (cmp < 0) {
         // R
         if (root->right == NULL) {
-            root->right = create_node(item, 0);
+            root->right = create_node(identifier_name, 0);
             fixheight(root);
             return RIGHT_T;
         }
-        subtree_t insertion_direction = insert(root->right, item);
+        subtree_t insertion_direction = insert(root->right, identifier_name);
         fixheight(root);
         int balancing_factor = bfactor(root);
         if (-2 < balancing_factor && balancing_factor < 2) {

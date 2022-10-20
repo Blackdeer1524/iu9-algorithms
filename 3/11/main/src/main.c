@@ -15,5 +15,8 @@ int main() {
         print_tree(test, "");
         printf("\n");
     }
+
+    int val = get(test, "beta1");
+    printf("%d", val);
     return 0;
 }
