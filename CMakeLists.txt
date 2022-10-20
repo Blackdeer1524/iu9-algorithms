@@ -3,4 +3,4 @@ project(iu_algos C)
 
 set(CMAKE_C_STANDARD 23)
 
-add_subdirectory(3)
+add_subdirectory(1)
