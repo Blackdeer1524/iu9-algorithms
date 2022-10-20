@@ -108,9 +108,9 @@ static const char *get_next_token(const char *token_start, size_t *new_token_len
         return token_start;
     }
 
-    if (c == '\0') {
-        --token_length;
-    }
+//    if (c == '\0') {
+//        --token_length;
+//    }
 
     *new_token_length = token_length;
     *contains_chars = cont_chars;
@@ -141,6 +141,5 @@ void tokenize(const char *sentence, size_t sentence_length) {
         printf("<%s> type: %d; value:%d\n", buffer, next_lexem.tag, next_lexem.value);
         next_token_start += new_token_length;
     }
-
     free(buffer);
 }
