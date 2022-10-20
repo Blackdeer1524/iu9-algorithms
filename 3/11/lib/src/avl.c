@@ -70,7 +70,7 @@ struct node *create_node(char *identifier_name, int height) {
 }
 
 
-int get(struct node *root, char *identifier_name) {
+int avlget(struct node *root, char *identifier_name) {
     if (root == NULL) {
         return -1;
     }
@@ -79,25 +79,26 @@ int get(struct node *root, char *identifier_name) {
     if (cmp == 0) {
         return root->identifier_value;
     } else if (cmp < 0) {
-        return get(root->right, identifier_name);
+        return avlget(root->right, identifier_name);
     } else {
-        return get(root->left, identifier_name);
+        return avlget(root->left, identifier_name);
     }
 }
 
 
-subtree_t insert(struct node *root, char *identifier_name) {
+subtree_t avlinsert(struct node **root_ptr, char *identifier_name) {
+    node *root = *root_ptr;
+    if (root == NULL) {
+        *root_ptr = create_node(identifier_name, 0);
+        return NO_INSERT;
+    }
+
     int cmp = strcmp(root->identifier_name, identifier_name);
     if (cmp == 0) {
         return NO_INSERT;
     } else if (cmp > 0) {
         // L
-        if (root->left == NULL) {
-            root->left = create_node(identifier_name, 0);
-            fixheight(root);
-            return LEFT_T;
-        }
-        subtree_t insertion_direction = insert(root->left, identifier_name);
+        subtree_t insertion_direction = avlinsert(&root->left, identifier_name);
         fixheight(root);
         int balancing_factor = bfactor(root);
         if (-2 < balancing_factor && balancing_factor < 2) {
@@ -146,6 +147,8 @@ subtree_t insert(struct node *root, char *identifier_name) {
                 fixheight(root);
                 break;
             }
+            case NO_INSERT:
+                break;
             default:
                 exit(1);
                 break;
@@ -153,12 +156,7 @@ subtree_t insert(struct node *root, char *identifier_name) {
         return LEFT_T;
     } else if (cmp < 0) {
         // R
-        if (root->right == NULL) {
-            root->right = create_node(identifier_name, 0);
-            fixheight(root);
-            return RIGHT_T;
-        }
-        subtree_t insertion_direction = insert(root->right, identifier_name);
+        subtree_t insertion_direction = avlinsert(&root->right, identifier_name);
         fixheight(root);
         int balancing_factor = bfactor(root);
         if (-2 < balancing_factor && balancing_factor < 2) {
@@ -207,6 +205,8 @@ subtree_t insert(struct node *root, char *identifier_name) {
                 fixheight(root);
                 break;
             }
+            case NO_INSERT:
+                break;
             default:
                 exit(1);
                 break;

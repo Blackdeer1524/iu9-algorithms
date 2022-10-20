@@ -23,6 +23,6 @@ typedef struct  {
 } lexem;
 
 
-void tokenize(char *sentence, int sentence_length);
+void tokenize(const char *sentence, size_t sentence_length);
 
 #endif //IU_ALGOS_LEXER_H
