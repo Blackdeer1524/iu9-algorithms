@@ -10,7 +10,7 @@ struct set_item {
     int count;
 };
 
-set_item set[TABLE_SIZE] = {};
+set_item int_counter[TABLE_SIZE] = {};
 
 int set_hash(int value) {
     return value % TABLE_SIZE;
@@ -44,22 +44,35 @@ set_item *get(set_item counter[], int item) {
 
 
 int main() {
-    int test_items[8] = {5, 8, 0, 0, 3, 2, 1, 10};
+    int test_items[8] = {1, 2, 0, 0, 1, 1, 1, 3};
+    int test_items_2[8] = {0, 0, 1, 1, 3, 1, 2, 1};
 
     for (int i = 0; i < 8; ++i) {
-        insert(set, test_items[i]);
+        insert(int_counter, test_items[i]);
     }
 
     for (int i = 0; i < 8; ++i) {
-        printf("<c:%d, v:%d> ", set[i].count, set[i].value);
+        printf("<c:%d, v:%d> ",
+               int_counter[i].count,
+               int_counter[i].value);
     }
     printf("\n");
 
     for (int i = 0; i < 8; ++i) {
-        set_item *res = get(set, test_items[i]);
+        set_item *res = get(int_counter, test_items[i]);
         assert(res != NULL);
         assert(res->value == test_items[i]);
-        printf("<c:%d, v:%d> ", res->count, res->value);
+        printf("<c:%d, v:%d> ",
+               res->count,
+               res->value);
     }
+    printf("\n");
 
+    for (int i = 0; i < 8; ++i) {
+        set_item *res = get(int_counter, test_items_2[i]);
+        if (res == NULL || res->count == 0) {
+            printf("%d wasn't found\n", test_items_2[i]);
+        }
+        --res->count;
+    }
 }
