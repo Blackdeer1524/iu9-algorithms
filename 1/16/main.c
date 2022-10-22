@@ -1,7 +1,8 @@
 #include <stdio.h>
 
 int strdiff(char *a, char *b) {
-    for (int i = 0; *a != '\0' && *b != '\0'; ++i, ++a, ++b) {
+    int i;
+    for (i = 0; *a != '\0' && *b != '\0'; ++i, ++a, ++b) {
         if (*a ^ *b) {
             int pos = 0;
             char a_val = *a, b_val = *b;
@@ -14,11 +15,16 @@ int strdiff(char *a, char *b) {
             return i * 8 + pos;
         }
     }
+
+    if ((*a == '\0') ^ (*b == '\0')) {
+        return i * 8;
+    }
+
     return -1;
 }
 
 
 int main() {
-    printf("%d", strdiff("ai", "aa"));
+    printf("%d", strdiff("aa1", "a"));
     return 0;
 }
