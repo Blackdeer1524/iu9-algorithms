@@ -3,7 +3,7 @@
 #define SIZE 4
 
 int array[SIZE] = {0, 1, 4, 5};
-const int k = 0;
+const int k = 5;
 
 int compare(unsigned long i) {
     if (array[i] > k) {
@@ -18,7 +18,7 @@ int compare(unsigned long i) {
 unsigned long binsearch(unsigned long nel, int (*compare)(unsigned long i)) {
     unsigned long left = 0, right = nel - 1;
     while (left <= right) {
-        unsigned long mid = right - left / 2;
+        unsigned long mid = left + (right - left) / 2;
         int res = compare(mid);
 
         if (res == 1) {
