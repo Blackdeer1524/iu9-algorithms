@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
+#include <stdlib.h>
 
 
 void selection_sort(int *base, size_t length) {
@@ -41,6 +43,15 @@ size_t partition(int *base, size_t l, size_t r) {
     return i;
 }
 
+size_t random_partition(int *base, size_t l, size_t r) {
+    size_t subarray_length = r - l + 1;
+    size_t pivot_index = l + (rand() % subarray_length);
+    int placeholder = base[pivot_index];
+    base[pivot_index] = base[r];
+    base[r] = placeholder;
+    return partition(base, l, r);
+}
+
 
 void quick_sort(int *base, size_t l, size_t r, size_t m) {
     if (r <= l) {
@@ -53,7 +64,7 @@ void quick_sort(int *base, size_t l, size_t r, size_t m) {
         return;
     }
 
-    size_t q = partition(base, l, r);
+    size_t q = random_partition(base, l, r);
     if (q) {
         quick_sort(base, l, q - 1, m);
     }
@@ -81,6 +92,7 @@ int test_sort(int *base, size_t length) {
 
 
 int main() {
+//    srand((unsigned int)time(NULL));
     int test[SIZE] = {5, 3, 1, 9, 12, 16, 7, -100, 13, 44};
 //    selection_sort(test, SIZE);
 

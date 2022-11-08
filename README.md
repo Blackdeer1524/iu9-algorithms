@@ -8,7 +8,7 @@
 <div id="toc"></div>
 <script src="toc.js"></script>
 <script>
-makeTOC.localizedHeader = "Содержание"
+makeTOC.localizedHeader = "Содержание";
 makeTOC.localizedShow = "Показать";
 makeTOC.localizedHide = "Скрыть";
 window.MathJax = {
