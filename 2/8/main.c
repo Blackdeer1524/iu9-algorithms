@@ -96,7 +96,7 @@ int main() {
     int test[SIZE] = {5, 3, 1, 9, 12, 16, 7, -100, 13, 44};
 //    selection_sort(test, SIZE);
 
-    size_t m = 7;
+    size_t m = 0;
 
     quick_sort(test, 0, SIZE - 1, m);
     for (size_t i = 0; i < SIZE; ++i) {
@@ -105,7 +105,6 @@ int main() {
 
     fflush(stdout);
     assert(!test_sort(test, SIZE));
-
 
     return 0;
 }
