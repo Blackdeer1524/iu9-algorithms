@@ -60,7 +60,7 @@ void stable_sort_by_year(Date *data, Date *buffer, size_t length) {
     buffer[--counting[data[0].Year - LEFT_YEAR_BOUND]] = data[0];
 }
 
-Date *radix_sort(Date *array, Date *result, size_t length) {
+void radix_sort(Date *array, Date *result, size_t length) {
     stable_sort_by_day(array, result, length);
     stable_sort_by_month(result, array, length);
     stable_sort_by_year(array, result, length);
