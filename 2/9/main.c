@@ -15,12 +15,18 @@ void inplace_csort(char *data, size_t length) {
     for (int i = 25; i > 0; --i) {
         char letter = i + 'a';
         while (counting[i] >= counting[i - 1]) {
+            if (counting[i] == 0) {
+                goto done;
+            }
             data[--counting[i]] = letter;
         }
     }
+    
     while (counting[0]) {
         data[--counting[0]] = 'a';
     }
+
+    done:
 }
 
 
