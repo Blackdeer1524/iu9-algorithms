@@ -135,4 +135,4 @@ def test_good_suffix_jump_table():
 if __name__ == "__main__":
     # test_good_suffix_jump_table()
     # boyer_moore_str_search("ababcabababc", "ababc")
-    boyer_moore_str_search("aaaaaa", "aa")
+    boyer_moore_str_search("abababababa", "aba")
