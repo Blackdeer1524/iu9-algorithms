@@ -1,0 +1,1 @@
+add_executable("is-prefixes-of-another" main.c)
