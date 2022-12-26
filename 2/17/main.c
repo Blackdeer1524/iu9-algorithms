@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define TABLE_ITEM_T int
-
 
 typedef struct{
-    TABLE_ITEM_T *table;
+    int *table;
     size_t n_rows;
     size_t n_cols;
 } Table;
@@ -17,17 +15,17 @@ int table_new(Table **dst, size_t n_rows, size_t n_cols) {
     if (*dst == NULL) {
         return 1;
     }
-    (*dst)->table=malloc(sizeof(TABLE_ITEM_T) * n_rows * n_cols);
+    (*dst)->table=malloc(sizeof(int) * n_rows * n_cols);
     (*dst)->n_rows=n_rows;
     (*dst)->n_cols=n_cols;
     return 0;
 }
 
-TABLE_ITEM_T *table_at(const Table *table, size_t row, size_t col) {
+int *table_at(const Table *table, size_t row, size_t col) {
     return table->table + row * table->n_cols + col;
 }
 
-int safe_table_at(const Table *table, size_t row, size_t col, TABLE_ITEM_T *res) {
+int safe_table_at(const Table *table, size_t row, size_t col, int *res) {
     if (row > table->n_rows || col > table->n_cols) {
         return 1;
     }
@@ -37,7 +35,7 @@ int safe_table_at(const Table *table, size_t row, size_t col, TABLE_ITEM_T *res)
 }
 
 
-int safe_table_set(Table *table, size_t row, size_t col, TABLE_ITEM_T data) {
+int safe_table_set(Table *table, size_t row, size_t col, int data) {
     if (row > table->n_rows || col > table->n_cols) {
         return 1;
     }
@@ -86,14 +84,37 @@ int safe_table_set(Table *table, size_t row, size_t col, TABLE_ITEM_T data) {
 }
 
 
-void fill_table(const TABLE_ITEM_T *array, size_t length, Table *table, size_t start, size_t end) {
+void print_table(Table *table) {
+    for (size_t i = 0; i < table->n_rows; ++i) {
+        for (size_t j = 0; j < table->n_cols; ++j) {
+            int item;
+            panicing_table_at(table, i, j, &item);
+            printf("%5d ", item);
+        }
+        puts("\n");
+    }
+}
+
+
+void fill_table(const int *array, size_t length, Table *table, size_t start, size_t end) {
+    assert(end <= length);
+    assert(table->n_cols == table->n_rows);
+    assert(table->n_cols == length);
+
     panicing_table_set(table, start, start, array[start]);
-    TABLE_ITEM_T prev_max_on_prefix = array[start];
+
+    int index_of_max_on_prev_prefix;
+    if (start) {
+        panicing_table_get_max_item_index_on_prefix(table, start - 1, &index_of_max_on_prev_prefix);
+    } else { 
+        index_of_max_on_prev_prefix = 0;
+    }
+    int prev_max_on_prefix = array[index_of_max_on_prev_prefix];
     
-    for (TABLE_ITEM_T i = start + 1; i < end; ++i) {
+    for (int i = start + 1; i < end; ++i) {
         panicing_table_set(table, i, i, array[i]);
 
-        TABLE_ITEM_T index_of_max_on_current_prefix;
+        int index_of_max_on_current_prefix;
         if (prev_max_on_prefix <= array[i]) {
             panicing_table_set_max_item_index_on_prefix(table, i, i);
             index_of_max_on_current_prefix = i;
@@ -102,7 +123,7 @@ void fill_table(const TABLE_ITEM_T *array, size_t length, Table *table, size_t s
             panicing_table_set_max_item_index_on_prefix(table, i,      index_of_max_on_current_prefix);
         }
 
-        TABLE_ITEM_T max_on_current_prefix = array[index_of_max_on_current_prefix];
+        int max_on_current_prefix = array[index_of_max_on_current_prefix];
         prev_max_on_prefix = max_on_current_prefix;
 
         for (size_t j = 0; j <= index_of_max_on_current_prefix; ++j) {
@@ -110,7 +131,7 @@ void fill_table(const TABLE_ITEM_T *array, size_t length, Table *table, size_t s
         }
 
         for (size_t filling_row_index = index_of_max_on_current_prefix + 1; filling_row_index < i; ++filling_row_index) {
-            TABLE_ITEM_T prev_max_of_filling_row;
+            int prev_max_of_filling_row;
             panicing_table_at(table, filling_row_index, i - 1, &prev_max_of_filling_row);
 
             if (prev_max_of_filling_row < array[i]) {
@@ -123,11 +144,24 @@ void fill_table(const TABLE_ITEM_T *array, size_t length, Table *table, size_t s
 }
 
 
+void update(int *array, size_t array_length, size_t updating_index, int new_item, Table *table) {
+    assert(updating_index < array_length);
+
+    array[updating_index] = new_item;
+
+    if (!updating_index) {
+        fill_table(array, array_length, table, 0, array_length);
+    } else {
+        fill_table(array, array_length, table, updating_index - 1, array_length);
+    }
+}   
+
+
 #define ARRAY_SIZE 8
 
 int main() {
-    TABLE_ITEM_T array[ARRAY_SIZE] = {-1, 3, 2, -10, 10, 5, 3, 0};
-    TABLE_ITEM_T table_data[ARRAY_SIZE * ARRAY_SIZE] = {};
+    int array[ARRAY_SIZE] = {-1, 3, 2, -10, 10, 5, 3, 0};
+    int table_data[ARRAY_SIZE * ARRAY_SIZE] = {};
     
     Table table = {
         .table = table_data,
@@ -136,6 +170,11 @@ int main() {
     };
     
     fill_table(array, ARRAY_SIZE, &table, 0, ARRAY_SIZE);
+    print_table(&table);
+    
+    puts("=========\n");
+    update(array, ARRAY_SIZE, 4, 1, &table);
+    print_table(&table);
 
     return 0;
 }
