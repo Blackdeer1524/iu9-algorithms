@@ -62,19 +62,20 @@ int safe_table_set(Table *table, size_t row, size_t col, int data) {
 }
 
 #define panicing_table_get_max_item_index_on_prefix(table_ptr, end, dst_ptr) {\
-    if (!(end)) {\
-        *dst_ptr = (end);\
-    }\
-    int res = safe_table_at((table_ptr), (end), 0, (dst_ptr));\
-    if (res) {\
-        printf("%s:%d Couldn't get index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
-        exit(1);\
+    if ((end) <= 0) {\
+        *(dst_ptr) = (end);\
+    } else {\
+        int res = safe_table_at((table_ptr), (end), 0, (dst_ptr));\
+        if (res) {\
+            printf("%s:%d Couldn't get index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
+            exit(1);\
+        }\
     }\
 }
 
 
 #define panicing_table_set_max_item_index_on_prefix(table_ptr, end, index) {\
-    if (end) {\
+    if ((end) > 0) {\
         int res = safe_table_set((table_ptr), (end), 0, (index));\
         if (res) {\
             printf("%s:%d Couldn't set index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
@@ -144,7 +145,7 @@ void fill_table(const int *array, size_t length, Table *table, size_t start, siz
 }
 
 
-void update(int *array, size_t array_length, size_t updating_index, int new_item, Table *table) {
+size_t update(int *array, size_t array_length, size_t updating_index, int new_item, Table *table) {
     assert(updating_index < array_length);
 
     array[updating_index] = new_item;
@@ -173,7 +174,7 @@ int main() {
     print_table(&table);
     
     puts("=========\n");
-    update(array, ARRAY_SIZE, 4, 1, &table);
+    update(array, ARRAY_SIZE, 0, 100, &table);
     print_table(&table);
 
     return 0;
