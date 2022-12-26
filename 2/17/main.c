@@ -4,8 +4,9 @@
 #include <string.h>
 
 typedef struct{
-    int *underlying_array;
-    int *table;
+    int *seq_data;
+    size_t *index_of_max_item_from_prefix;
+    int **table;
     size_t N;
 
     int needs_to_be_updated;
@@ -16,42 +17,60 @@ typedef struct{
 typedef enum {
     Normal,
     TableStructAlloc,
+    IndicesStorageAlloc,
     TableAlloc,
     ArrayAlloc
 } TableCreationCodes;
 
 
 TableCreationCodes table_new(Table **dst, size_t N) {
-    *dst = malloc(sizeof(Table));
-    if (*dst == NULL) {
+    Table *table = malloc(sizeof(Table));
+    if (table == NULL) {
         return TableStructAlloc;
     }
-
-    if ((*dst)->table=malloc(sizeof(int) * N * N) == NULL) {
+    
+    if ((table->table = malloc(sizeof(int *) * N)) == NULL) {
         return TableAlloc;
     }
 
-    if ((*dst)->underlying_array=malloc(sizeof(int) * N) == NULL) {
+    for (size_t i = 0; i <  N; ++i) {
+        if ((table->table[i] = malloc(sizeof(int) * (N - i))) == NULL) {
+            return IndicesStorageAlloc;
+        }
+    }
+
+    if ((table->index_of_max_item_from_prefix = malloc(sizeof(int) * N)) == NULL) {
+        return TableAlloc;
+    }
+
+    if ((table->seq_data=malloc(sizeof(int) * N)) == NULL) {
         return ArrayAlloc;
     }
 
-    (*dst)->N=N;
-    (*dst)->needs_to_be_updated=0;
-    (*dst)->leftmost_updated_index=0;
+    (table)->N=N;
+    (table)->needs_to_be_updated=0;
+    (table)->leftmost_updated_index=0;
+
+    *dst = table;
     return Normal;
 }
 
 
 void free_table(Table *table) {
+    for (size_t i = 0; i < table->N; ++i) {
+        free(table->table[i]);
+    }
     free(table->table);
-    free(table->underlying_array);
+    free(table->seq_data);
+    free(table->index_of_max_item_from_prefix);
     free(table);
 }
 
 
 int *table_at(const Table *table, size_t row, size_t col) {
-    return table->table + row * table->N + col;
+    return &table->table[row][col - row];
 }
+
 
 int safe_table_at(const Table *table, size_t row, size_t col, int *res) {
     if (row > table->N || col > table->N) {
@@ -73,6 +92,53 @@ int safe_table_set(Table *table, size_t row, size_t col, int data) {
 }
 
 
+size_t table_get_index_of_max_item_from_prefix(const Table *table, size_t i) {
+    return table->index_of_max_item_from_prefix[i];
+}
+
+
+int safe_table_get_index_of_max_item_from_prefix(const Table *table, size_t i, size_t *dst_ptr) {
+    if (i >= table->N) {
+        return 1;
+    }
+    *dst_ptr = table_get_index_of_max_item_from_prefix(table, i);
+    return 0; 
+}
+
+
+#define panicing_table_get_index_of_max_item_from_prefix(table_ptr, i, dst_ptr) {\
+    int _res = safe_table_get_index_of_max_item_from_prefix((table_ptr), i, dst_ptr);\
+    if (_res) {\
+        printf("%s:%d Couldn't get new index for max item in prefix of length %zu\n", __func__, __LINE__, (size_t)(i));\
+        exit(1);\
+    }\
+}
+
+
+void table_set_index_of_max_item_from_prefix(const Table *table, size_t i, size_t new_index) {
+    table->index_of_max_item_from_prefix[i] = new_index;
+}
+
+
+int safe_table_set_index_of_max_item_from_prefix(const Table *table, size_t i, size_t new_index) {
+    if (i >= table->N) {
+        return 1;
+    }
+    
+    table_set_index_of_max_item_from_prefix(table, i, new_index);
+    return 0;
+}
+
+
+#define panicing_table_set_index_of_max_item_from_prefix(table_ptr, i, new_index) {\
+    int _res = safe_table_set_index_of_max_item_from_prefix((table_ptr), (i), (new_index));\
+    if (_res) {\
+        printf("%s:%d Couldn't set new index for max item in prefix of length %zu\n", __func__, __LINE__, (size_t)(i));\
+        exit(1);\
+    }\
+}
+
+
 #define panicing_table_at(table_ptr, row, col, dst_ptr) {\
     int _res = safe_table_at((table_ptr), (row), (col), (dst_ptr));\
     if (_res) {\
@@ -80,6 +146,7 @@ int safe_table_set(Table *table, size_t row, size_t col, int data) {
         exit(1);\
     }\
 }
+
 
 #define panicing_table_set(table_ptr, row, col, item) {\
     int _res = safe_table_set((table_ptr), (row), (col), (item));\
@@ -89,28 +156,28 @@ int safe_table_set(Table *table, size_t row, size_t col, int data) {
     }\
 }
 
-#define panicing_table_get_max_item_index_on_prefix(table_ptr, end, dst_ptr) {\
-    if ((end) <= 0) {\
-        *(dst_ptr) = (end);\
-    } else {\
-        int _res = safe_table_at((table_ptr), (end), 0, (dst_ptr));\
-        if (_res) {\
-            printf("%s:%d Couldn't get index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
-            exit(1);\
-        }\
-    }\
-}
+// #define panicing_table_get_max_item_index_on_prefix(table_ptr, end, dst_ptr) {\
+//     if ((end) <= 0) {\
+//         *(dst_ptr) = (end);\
+//     } else {\
+//         int _res = safe_table_at((table_ptr), (end), 0, (dst_ptr));\
+//         if (_res) {\
+//             printf("%s:%d Couldn't get index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
+//             exit(1);\
+//         }\
+//     }\
+// }
 
 
-#define panicing_table_set_max_item_index_on_prefix(table_ptr, end, index) {\
-    if ((end) > 0) {\
-        int _res = safe_table_set((table_ptr), (end), 0, (index));\
-        if (_res) {\
-            printf("%s:%d Couldn't set index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
-            exit(1);\
-        }\
-    }\
-}
+// #define panicing_table_set_max_item_index_on_prefix(table_ptr, end, index) {\
+//     if ((end) > 0) {\
+//         int _res = safe_table_set((table_ptr), (end), 0, (index));\
+//         if (_res) {\
+//             printf("%s:%d Couldn't set index of max item on [0, %zu] interval\n", __func__, __LINE__, (size_t)(end));\
+//             exit(1);\
+//         }\
+//     }\
+// }
 
 
 void print_table(Table *table) {
@@ -125,21 +192,21 @@ void print_table(Table *table) {
 }
 
 
-static inline int table_get_item_from_undelying_array(Table *table, size_t i) {
+int table_get_item_from_undelying_array(Table *table, size_t i) {
     if (i >= table->N) {
         printf("%s:%d Couldn't get table->array[%zu]", __func__, __LINE__,  i);
         exit(1);
     }
-    return table->underlying_array[i];
+    return table->seq_data[i];
 }
 
 
 void fill_table(Table *table, size_t start) {
     panicing_table_set(table, start, start, table_get_item_from_undelying_array(table, start));
 
-    int index_of_max_on_prev_prefix;
+    size_t index_of_max_on_prev_prefix;
     if (start) {
-        panicing_table_get_max_item_index_on_prefix(table, start - 1, &index_of_max_on_prev_prefix);
+        panicing_table_get_index_of_max_item_from_prefix(table, start - 1, &index_of_max_on_prev_prefix);
     } else { 
         index_of_max_on_prev_prefix = 0;
     }
@@ -148,13 +215,13 @@ void fill_table(Table *table, size_t start) {
     for (int i = start + 1; i < table->N; ++i) {
         panicing_table_set(table, i, i, table_get_item_from_undelying_array(table, i));
 
-        int index_of_max_on_current_prefix;
+        size_t index_of_max_on_current_prefix;
         if (prev_max_on_prefix <= table_get_item_from_undelying_array(table, i)) {
-            panicing_table_set_max_item_index_on_prefix(table, i, i);
+            panicing_table_set_index_of_max_item_from_prefix(table, i, i);
             index_of_max_on_current_prefix = i;
         } else {
-            panicing_table_get_max_item_index_on_prefix(table, i - 1, &index_of_max_on_current_prefix);
-            panicing_table_set_max_item_index_on_prefix(table, i,      index_of_max_on_current_prefix);
+            panicing_table_get_index_of_max_item_from_prefix(table, i - 1, &index_of_max_on_current_prefix);
+            panicing_table_set_index_of_max_item_from_prefix(table, i,      index_of_max_on_current_prefix);
         }
 
         int max_on_current_prefix = table_get_item_from_undelying_array(table, index_of_max_on_current_prefix);
@@ -181,10 +248,10 @@ void fill_table(Table *table, size_t start) {
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 
 
-void table_update_underlying_array(Table *table, size_t updating_index, int new_item) {
+void table_update_seq_data(Table *table, size_t updating_index, int new_item) {
     assert(updating_index < table->N);
     
-    table->underlying_array[updating_index] = new_item;
+    table->seq_data[updating_index] = new_item;
     table->needs_to_be_updated = 1;
     table->leftmost_updated_index = min(table->leftmost_updated_index, updating_index);
 }
@@ -237,7 +304,7 @@ int main() {
     }
 
     for (size_t i = 0; i < n; ++i) {
-        fscanf(input_file, "%d", table->underlying_array + i);
+        fscanf(input_file, "%d", table->seq_data + i);
     }
 
     fill_table(table, 0);
@@ -264,7 +331,7 @@ int main() {
             int new_value;
             fscanf(input_file, "%zu %d", &index, &new_value);
             
-            table_update_underlying_array(table, index, new_value);
+            table_update_seq_data(table, index, new_value);
         } else {
             printf("afsdads");
         }
