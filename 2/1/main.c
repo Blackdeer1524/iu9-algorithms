@@ -59,16 +59,20 @@ size_t table_get(Table *table, size_t row, size_t col) {
     return table->data[row * table->n_cols + col];
 }
 
+// #define DEBUG
 
-void print_table(Table *table) { 
-    for (size_t i = 0; i < table->n_rows; ++i) {
-        for (size_t j = 0; j < table->n_cols; ++j) {
-            printf("%zu ", table_get(table, i, j));
-        }
-        puts("\n");
-    }
+#ifdef DEBUG
+#define print_table(table_ptr) { \
+    for (size_t i = 0; i < (table_ptr)->n_rows; ++i) { \
+        for (size_t j = 0; j < (table_ptr)->n_cols; ++j) { \
+            printf("%zu ", table_get((table_ptr), i, j)); \
+        } \
+        puts("\n"); \
+    } \
 }
-
+#else
+#define print_table(table_ptr)
+#endif
 
 size_t shortest_superstring_length(char **collection, size_t N) {
     Table *overlap;
@@ -121,11 +125,10 @@ size_t shortest_superstring_length(char **collection, size_t N) {
         max_overlap = max(max_overlap, table_get(dp, all_chosen_mask, i));
         total_len += strlen(collection[i]);
     }
-    puts("=============");
     print_table(dp);
 
     free_table(overlap);
-    free(dp);
+    free_table(dp);
     return total_len - max_overlap;
 }
 
@@ -156,14 +159,30 @@ void test_get_max_overlap() {
 
 
 int main() {
+    size_t n;
+
+    scanf("%zu", &n);
+    char **string_collection = malloc(sizeof(char *) * n);
+    
+    for (size_t i = 0; i < n; ++i) {
+        string_collection[i] = malloc(sizeof(char) * 64);
+        scanf("%s", string_collection[i]);
+    }
+    printf("%zu\n", shortest_superstring_length(string_collection, n));
+
+    for (size_t i = 0; i < n; ++i) {
+        free(string_collection[i]);
+    }
+    free(string_collection);
+
     // test_get_max_overlap();
 
-    char *test[] = {
-        "1231241312tyurikjnd",
-        "123123123",
-        "123123123vefvfwedew123123",
-    };
+    // char *test[] = {
+    //     "1231241312tyurikjnd",
+    //     "123123123",
+    //     "123123123vefvfwedew123123",
+    // };
 
-    printf("%zu\n", shortest_superstring_length(test, sizeof(test) / sizeof(test[0])));
+    // printf("%zu\n", shortest_superstring_length(test, sizeof(test) / sizeof(test[0])));
     return 0;
 }
