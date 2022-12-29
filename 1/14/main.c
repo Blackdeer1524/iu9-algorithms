@@ -5,6 +5,7 @@ int wcount(char *s) {
     if (s == NULL) {
         return 0;
     }
+
     int word_count = 0;
     char c;
     while (1) {
@@ -22,8 +23,11 @@ int wcount(char *s) {
     return word_count;
 }
 
+
 int main() {
-    char *test = "";
+    char test[1000];
+    gets(test);
+    
     printf("%d", wcount(test));
     return 0;
 }

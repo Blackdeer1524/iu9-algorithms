@@ -23,13 +23,23 @@ char *concat(char **s, int n) {
 
 
 int main() {
-    char *tests[] = {
-            "0",
-            "12",
-            "345",
-            "6789",
-    };
-    char *concat_res = concat(tests, sizeof (tests) / sizeof tests[0]);
+    int n;
+    scanf("%d", &n);
+    char **test = malloc(sizeof(char *) * n);
+    for (size_t i = 0; i < n; ++i) {
+        char *r = malloc(sizeof(char) * 1000);
+        scanf("%s", r);
+        test[i] = r;
+    }
+
+    char *concat_res = concat(test, n);
     printf("%s", concat_res);
     free(concat_res);
+
+
+    for (size_t i = 0; i < n; ++i) {
+        free(test[i]);
+    }
+    free(test);
+    return 0;
 }

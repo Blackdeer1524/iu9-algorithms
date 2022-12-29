@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 
 int add_item(uint32_t *dst, int item) {
     if (item > 31 || item < 0) {
@@ -27,18 +27,26 @@ void print_set(uint32_t set) {
 
 
 int main() {
+    size_t A_size;
+    scanf("%zu", &A_size);
+
     uint32_t set_1 = 0;
-    add_item(&set_1, 2);
-    add_item(&set_1, 4);
-    add_item(&set_1, 0);
+    for (size_t i = 0; i < A_size; ++i) {
+        int item;
+        scanf("%d", &item);
+        add_item(&set_1, item);
+    }
+
+    size_t B_size;
+    scanf("%zu", &B_size);
 
     uint32_t set_2 = 0;
-    add_item(&set_2, 0);
-    add_item(&set_2, 1);
-    add_item(&set_2, 3);
+    for (size_t i = 0; i < B_size; ++i) {
+        int item;
+        scanf("%d", &item);
+        add_item(&set_2, item);
+    }
 
-    print_set(set_1);
-    printf("\n");
     uint32_t set_intersection = intersection(set_1, set_2);
     print_set(set_intersection);
 }

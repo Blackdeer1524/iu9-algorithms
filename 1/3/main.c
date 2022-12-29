@@ -2,23 +2,20 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
+#include <stdint.h>
 
+int64_t *generate_fib_list(int64_t x, int64_t *generated_size) {
+    int64_t list_size = 10;
+    int64_t *fib_list = malloc(sizeof(int64_t) * list_size);
+    int64_t current_size = 0;
 
-int *generate_fib_list(int x, int *generated_size) {
-    int list_size = 10;
-    int *fib_list = malloc(sizeof(int) * list_size);
-    int current_size = 0;
-
-    int start = 0;
-    int middle = 1;
-    int next;
+    int64_t start = 0;
+    int64_t middle = 1;
+    int64_t next;
     while ((next = middle + start) <= x) {
         if (current_size == list_size) {
             list_size <<= 1;
-            int *next_mem_location = malloc(sizeof (int) * list_size);
-            memcpy(next_mem_location, fib_list, list_size >> 1);
-            free(fib_list);
-            fib_list = next_mem_location;
+            fib_list = realloc(fib_list, list_size * sizeof(int64_t));
         }
 
         fib_list[current_size] = next;
@@ -33,12 +30,12 @@ int *generate_fib_list(int x, int *generated_size) {
 }
 
 
-int bin_search(const int *array, int n, int item) {
-    int l = 0;
-    int r = n - 1;
+int64_t bin_search(const int64_t *array, int64_t n, int64_t item) {
+    int64_t l = 0;
+    int64_t r = n - 1;
     while (l <= r) {
-        int m = r - l / 2;
-        int m_ar_item = array[m];
+        int64_t m = l + ((r - l) / 2);
+        int64_t m_ar_item = array[m];
         if (m_ar_item == item) {
             return m;
         } else if (m_ar_item < item) {
@@ -51,18 +48,18 @@ int bin_search(const int *array, int n, int item) {
 }
 
 
-void fibsys(int x, const int *fib_list, int n) {
-    int next_x = x;
-    int max_fib_ind = bin_search(fib_list, n, x);
+void fibsys(int64_t x, const int64_t *fib_list, int64_t n) {
+    int64_t next_x = x;
+    int64_t max_fib_ind = bin_search(fib_list, n, x);
 
-    int cum_sum = 0;
+    int64_t cum_sum = 0;
 
     while (next_x > 0) {
         cum_sum += fib_list[max_fib_ind];
         next_x -= fib_list[max_fib_ind];
-        int next_max_fib_ind = bin_search(fib_list, n, next_x);
+        int64_t next_max_fib_ind = bin_search(fib_list, n, next_x);
         printf("1");
-        for (int i = 0; i < max_fib_ind - next_max_fib_ind - 1; ++i) {
+        for (int64_t i = 0; i < max_fib_ind - next_max_fib_ind - 1; ++i) {
             printf("0");
         }
         max_fib_ind = next_max_fib_ind;
@@ -73,16 +70,30 @@ void fibsys(int x, const int *fib_list, int n) {
 
 
 int main() {
-    int items[] = {1, 3, 5, 10, 20, 50, 37, 100};
-    for (int i = 0; i < sizeof (items) / sizeof (items[0]); ++i) {
-        int fib_seq_length;
-        int x = items[i];
-        int *fib_seq = generate_fib_list(x, &fib_seq_length);
-        printf("%d: ", x);
-        fibsys(x, fib_seq, fib_seq_length);
-        printf("\n");
-        free(fib_seq);
+    int64_t x;
+    scanf("%ld", &x);
+
+    if (!x) {
+        printf("0");
+        return 0;
     }
+
+    int64_t generated_size;
+    int64_t *generated_fib_list = generate_fib_list(x, &generated_size);
+
+    fibsys(x, generated_fib_list, generated_size);
+    free(generated_fib_list);
+
+    // int64_t items[] = {1, 3, 5, 10, 20, 50, 37, 100};
+    // for (int64_t i = 0; i < sizeof (items) / sizeof (items[0]); ++i) {
+    //     int64_t fib_seq_length;
+    //     int64_t x = items[i];
+    //     int64_t *fib_seq = generate_fib_list(x, &fib_seq_length);
+    //     print64_tf("%d: ", x);
+    //     fibsys(x, fib_seq, fib_seq_length);
+    //     print64_tf("\n");
+    //     free(fib_seq);
+    // }
 
 //    // Edge cases
 //    // will never occur here

@@ -12,8 +12,11 @@ struct set_item {
 
 set_item int_counter[TABLE_SIZE] = {};
 
+#define abs(x) (((x) >= 0) ? (x) : -(x))
+
+
 int set_hash(int value) {
-    return value % TABLE_SIZE;
+    return abs(value % TABLE_SIZE);
 }
 
 void insert(set_item counter[], int item) {
@@ -44,35 +47,49 @@ set_item *get(set_item counter[], int item) {
 
 
 int main() {
-    int test_items[8] = {1, 2, 0, 0, 1, 1, 1, 3};
-    int test_items_2[8] = {0, 0, 1, 1, 3, 1, 2, 1};
+    int a[TABLE_SIZE];
+    int b[TABLE_SIZE];
 
-    for (int i = 0; i < 8; ++i) {
-        insert(int_counter, test_items[i]);
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        scanf("%d", a + i);
     }
 
-    for (int i = 0; i < 8; ++i) {
-        printf("<c:%d, v:%d> ",
-               int_counter[i].count,
-               int_counter[i].value);
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        scanf("%d", b + i);
     }
-    printf("\n");
+
+    // int a[8] = {12, 2, 0, 0, 1, 1, 1, 3};
+    // int b[8] = {0, 0, 1, 1, 3, 1, 2, 1};
 
     for (int i = 0; i < 8; ++i) {
-        set_item *res = get(int_counter, test_items[i]);
-        assert(res != NULL);
-        assert(res->value == test_items[i]);
-        printf("<c:%d, v:%d> ",
-               res->count,
-               res->value);
+        insert(int_counter, a[i]);
     }
-    printf("\n");
 
-    for (int i = 0; i < 8; ++i) {
-        set_item *res = get(int_counter, test_items_2[i]);
+    // for (int i = 0; i < 8; ++i) {
+    //     printf("<c:%d, v:%d> ",
+    //            int_counter[i].count,
+    //            int_counter[i].value);
+    // }
+    // printf("\n");
+
+    // for (int i = 0; i < 8; ++i) {
+    //     set_item *res = get(int_counter, test_items[i]);
+    //     assert(res != NULL);
+    //     assert(res->value == test_items[i]);
+    //     printf("<c:%d, v:%d> ",
+    //            res->count,
+    //            res->value);
+    // }
+    // printf("\n");
+
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        set_item *res = get(int_counter, b[i]);
         if (res == NULL || res->count == 0) {
-            printf("%d wasn't found\n", test_items_2[i]);
+            printf("no");
+            return 0;
         }
         --res->count;
     }
+    printf("yes");
+    return 0;
 }

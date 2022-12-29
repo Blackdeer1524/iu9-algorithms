@@ -1,60 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h> 
 
 
-double P_n(double x, const int *coefs, int n, int *error_flag) {
-    if (n < 0) {
-        *error_flag = 1;
-        return 0;
-    }
+int64_t P_n(int64_t x, const int64_t *coefs, size_t n) {
     if (n == 0) {
         return *coefs;
     }
-    return coefs[n] + x * P_n(x, coefs, n - 1, error_flag);
+    return coefs[n] + x * P_n(x, coefs, n - 1);
 }
 
 
-double P_prime_n(double x, const int *coefs, int n, int *error_flag) {
-    if (n < 0) {
-        *error_flag = 1;
-        return 0;
-    }
-
+int64_t P_prime_n(int64_t x, const int64_t *coefs, size_t n) {
     if (n == 0) {
         return 0;
-    } else if (n == 1) {
-        return coefs[n];
     }
 
-    return P_n(x, coefs, n - 1, error_flag) + x * P_prime_n(x, coefs, n - 1, error_flag);
+    return P_n(x, coefs, n - 1) + x * P_prime_n(x, coefs, n - 1);
 }
 
 
 int main() {
-//    int n = 0;
-//    double x_0 = 0;
-//    scanf("%d %lf", &n, &x_0);
-//
-//    int *poly_coefs = malloc((n + 1) * sizeof (int));
-//    for (int i = 0; i < n; ++i) {
-//        scanf("%d", poly_coefs + i);
-//    }
-//    int error_flag = 0;
-    int n = 2;
-    double x_0 = 2;
-    int *poly_coefs = malloc((n + 1) * sizeof (int));
-    poly_coefs[0] = 1;
-    poly_coefs[1] = 1;
-    poly_coefs[2] = 0;
+   size_t n = 0;
+   int64_t x_0 = 0;
+   scanf("%zu %ld", &n, &x_0);
 
-    int error_flag = 0;
+   int64_t *poly_coefs = malloc((n + 1) * sizeof (int64_t));
+   for (int i = 0; i < n + 1; ++i) {
+       scanf("%ld", poly_coefs + i);
+   }
+    // size_t n = 3;
+    // int64_t *poly_coefs = malloc((n + 1) * sizeof (int64_t));
 
-    double res = P_n(x_0, poly_coefs, n, &error_flag);
-    printf("%lf\n", res);
+    // double x_0 = 3;
+    // poly_coefs[0] = 1;
+    // poly_coefs[1] = -2;
+    // poly_coefs[2] = 15;
+    // poly_coefs[3] = -10;
 
-    error_flag = 0;
-    res = P_prime_n(x_0, poly_coefs, n, &error_flag);
-    printf("%lf\n", res);
+    // int error_flag = 0;
+
+    int64_t res = P_n(x_0, poly_coefs, n);
+    printf("%ld\n", res);
+
+    res = P_prime_n(x_0, poly_coefs, n);
+
+    printf("%ld\n", res);
 
     free(poly_coefs);
     return 0;

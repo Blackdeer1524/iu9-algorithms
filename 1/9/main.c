@@ -8,13 +8,15 @@ void revarray(void *base, size_t nel, size_t width) {
         return;
     }
 
-    void *intermediate_buffer = malloc(width);
-    void *right_item = base + (nel - 1) * width;
+    char *char_base = (char *) base; 
+
+    char *intermediate_buffer = malloc(width);
+    char *right_item = char_base + (nel - 1) * width;
     for (size_t i = 0; i < nel / 2; ++i) {
-        memcpy(intermediate_buffer, base, width);
-        memcpy(base, right_item, width);
+        memcpy(intermediate_buffer, char_base, width);
+        memcpy(char_base, right_item, width);
         memcpy(right_item, intermediate_buffer, width);
-        base += width;
+        char_base += width;
         right_item -= width;
     }
     free(intermediate_buffer);
