@@ -42,14 +42,12 @@ size_t *prepare_good_suffix_rule(const char *pattern, size_t length) {
         return jump_table;
     }
 
-
     size_t *backward_kmp_preprocess = calloc(length + 1, sizeof(size_t));
 
     size_t right_index = length - 1;
 
     size_t pattern_pivot_index = right_index;
     size_t i = length - 2;
-
 
     size_t cum_sum = 0;
     while (i) {
@@ -99,6 +97,7 @@ size_t *prepare_good_suffix_rule(const char *pattern, size_t length) {
         cum_sum = right_index - pattern_pivot_index;
     }
 
+    free(backward_kmp_preprocess);
     return jump_table;
 }
 
@@ -115,11 +114,18 @@ int table_new(Table **dst, size_t n_rows, size_t n_cols) {
     if (*dst == NULL) {
         return 1;
     }
-    (*dst)->table=malloc(sizeof(size_t) * n_rows * n_cols);
+    (*dst)->table=calloc(sizeof(size_t), n_rows * n_cols);
     (*dst)->n_rows=n_rows;
     (*dst)->n_cols=n_cols;
     return 0;
 }
+
+
+void table_free(Table *table) {
+    free(table->table);
+    free(table);
+}
+
 
 size_t *table_at(const Table *table, size_t row, size_t col) {
     return table->table + row * table->n_cols + col;
@@ -171,8 +177,13 @@ Table *prepare_bad_character_rule(const char *pattern, size_t length) {
 
     static size_t last_valid_item_lookup[N_ALLOWED_CHARS];
     for (size_t i = 0; i < N_ALLOWED_CHARS; ++i) {
-        jump_table->table[i] = length;
         last_valid_item_lookup[i] = 0;
+    }
+
+    for (size_t i = 0; i < jump_table->n_rows; ++i) {
+        for (size_t j = 0; j < jump_table->n_cols; ++j) {
+            panicing_table_set(jump_table, i, j, j + 1);
+        }
     }
 
     for (size_t i = 1; i < length; ++i) { 
@@ -210,9 +221,9 @@ void boyer_moore_str_search(const char *src, size_t src_length, const char *patt
         return;
     }
 
-    const size_t *good_suffix_jump_table = prepare_good_suffix_rule(pattern, pattern_length);
-    const Table *bad_char_jump_table = prepare_bad_character_rule(pattern, pattern_length);
-    const size_t *forward_kmp_table = get_forward_kmp_table(pattern, pattern_length);
+    size_t *good_suffix_jump_table = prepare_good_suffix_rule(pattern, pattern_length);
+    Table *bad_char_jump_table = prepare_bad_character_rule(pattern, pattern_length);
+    size_t *forward_kmp_table = get_forward_kmp_table(pattern, pattern_length);
 
     size_t offset = 0;
     size_t left_bound = 0;
@@ -226,25 +237,38 @@ void boyer_moore_str_search(const char *src, size_t src_length, const char *patt
         } while (i > left_bound);
 
         printf("%zu ", offset);
-        offset += (forward_kmp_table[pattern_length - 1]) ? forward_kmp_table[pattern_length - 1] : pattern_length;
-        left_bound = 0;
+        offset += pattern_length - forward_kmp_table[pattern_length - 1];
+        left_bound = forward_kmp_table[pattern_length - 1];
         continue;
 
-        found_some_difference: 
+        found_some_difference:;
 
-        size_t good_suffix_shift = (i + 1 < pattern_length) ? good_suffix_jump_table[i + 1] : pattern_length;
+        size_t good_suffix_shift = (i + 1 < pattern_length) ? good_suffix_jump_table[i + 1] : 0;
         size_t bad_char_shift;
         panicing_table_at(bad_char_jump_table, src[offset + i] - LOWEST_CHAR_CODE, i, &bad_char_shift);
 
-        offset += max(good_suffix_shift, bad_char_shift);
-        offset -= forward_kmp_table[offset];
+        size_t max_offset = max(good_suffix_shift, bad_char_shift);
+        offset += max(max_offset, 1);
+        left_bound = 0;
+        // offset -= forward_kmp_table[i];
     }
+
+    free(good_suffix_jump_table);
+    free(forward_kmp_table);
+    table_free(bad_char_jump_table);  
 }
 
 
 int main(int argc, char *argv[]) {
-    // char *src = argv[2];
-    // char *pattern = argv[1];
+    char *src = argv[2];
+    char *pattern = argv[1];
+        
+    // char *src     = "ndd9Md9PdPdPndd9ZTadnxddrddxds3ddrddsddddMLddd9ddrddr6dyddr"; 
+    // char *pattern = "ddrdd";
+    // char *src = "aaaaaaaaaaaaa";
+    //             //  abcba
+    //                 // abcba
+    // char *pattern = "aaaaa";
 
     boyer_moore_str_search(src, strlen(src), pattern, strlen(pattern));
     return 0;

@@ -1,1 +1,1 @@
-add_executable("Boyer-Moore string search" main.c)
+add_executable("Boyer-Moore_string_search" main.c)
