@@ -1,5 +1,7 @@
 #include <stdlib.h> 
 #include <stdio.h>
+#include <assert.h>
+#include <string.h>
 
 // https://www.youtube.com/watch?v=V5-7GzOfADQ
 size_t *prepare_pattern(const char *pattern, size_t length, size_t *first_nonzero_index) {
@@ -30,7 +32,7 @@ size_t *prepare_pattern(const char *pattern, size_t length, size_t *first_nonzer
 }
 
 
-size_t print_all_string_occurrences(const char *src, size_t src_length, char *search_string, size_t search_length) {
+void print_all_string_occurrences(const char *src, size_t src_length, char *search_string, size_t search_length) {
     //                       |------ subpattern start
     //                       V
     // if search_string = "ababac", then first_subpattern_index = 2
@@ -62,10 +64,10 @@ size_t print_all_string_occurrences(const char *src, size_t src_length, char *se
     if (prefix_index == search_length) {
         printf("%zu ", i - prefix_index);
     }
+
+    free(pattern_matrix);
 }
 
-#include <assert.h>
-#include <string.h>
 
 void test_pattern_matrix() {
     char *pattern = "abcabcaaba";
@@ -90,7 +92,7 @@ void test_pattern_matrix() {
 
 
 void test_search_single(char *src, char *search_string, size_t asserion) {
-    assert(print_all_string_occurrences(src, strlen(src), search_string, strlen(search_string)) == asserion);
+    print_all_string_occurrences(src, strlen(src), search_string, strlen(search_string));
 }
 
 void test_search() {
