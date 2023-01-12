@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 project(iu_algos C)
 set(CMAKE_C_STANDARD 23)
 
-set(CURRENT_MODULE "2" CACHE STRING "CURRENT MODULE")
-
 set(TARGET_GROUP production CACHE STRING "Group to build")
-
-message(${TARGET_GROUP})
+set(CUR_MODULE CACHE STRING "module")
+set(QUESTION CACHE STRING "question")
 
 if(TARGET_GROUP STREQUAL production)
     set(CMAKE_C_FLAGS "-g3 -Wall -Werror -O0 -fsanitize=address -fdiagnostics-color=always") 
@@ -30,5 +28,5 @@ else()
     message(FATAL_ERROR "Given TARGET_GROUP unknown")
 endif()
 
-add_subdirectory(${CURRENT_MODULE})
-
+message("started building ${CUR_MODULE}/${QUESTION}")
+add_subdirectory(${CUR_MODULE})

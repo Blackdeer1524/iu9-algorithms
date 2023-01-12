@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 typedef union {
     int x;
@@ -75,5 +76,6 @@ int main() {
     }
     radix_sort(data, n);
     print_data(data, n);
+    free(data);
     return 0;
 }

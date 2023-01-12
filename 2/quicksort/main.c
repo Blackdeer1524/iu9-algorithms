@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <time.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 
 void selection_sort(int64_t *base, size_t length) {
@@ -86,9 +87,6 @@ int64_t test_sort(int64_t *base, size_t length) {
     }
     return 0;
 }
-
-
-#define SIZE 10
 
 
 int main() {

@@ -89,5 +89,8 @@ int main() {
         putc('\n', stdout);
     }
 
+    free(data);
+    free(res);
+
     return 0;
 }
