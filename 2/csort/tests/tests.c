@@ -77,7 +77,7 @@ void test_index_table_gen(void) {
 
 
 void test_csort(void) { 
-    char result_buffer[100];
+    char result_buffer[100] = {13};
     {
         char *given = "";
         char *expected = "";
