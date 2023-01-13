@@ -72,8 +72,8 @@ int compute_index_table(char *reduced_src, size_t len, size_t word_count, size_t
         return 1;
     }
 
-    size_t *res = malloc(sizeof(size_t) * word_count + 1);
-    res[0] = 0;
+    size_t *res = malloc(sizeof(size_t) * (word_count + 1));
+    res[0] = -1;
     size_t res_index = 0;
     size_t src_index = 0;
 
@@ -98,19 +98,56 @@ int compute_index_table(char *reduced_src, size_t len, size_t word_count, size_t
 void csort(char *src, char *dest) {
     size_t src_length = strlen(src);
 
+    if (src_length == 0) {
+        dest[src_length] = '\0';
+        return;
+    }
+
     size_t wc, reduced_string_len;
     int error_code = wcount(src, src_length, &wc, &reduced_string_len); 
-    assert(error_code && "wc: error occured");
+    assert(!error_code && "wc: error occured");
+    dest[reduced_string_len] = '\0';
 
     char *reduced_string;
     error_code = reduce_string(src, src_length, wc, reduced_string_len, &reduced_string);
-    assert(error_code && "reduce_string: error occured");
+    assert(!error_code && "reduce_string: error occured");
 
     size_t *index_table;
     error_code = compute_index_table(reduced_string, reduced_string_len, wc, &index_table);
-    assert(error_code && "compute_index_table: error occured");
+    assert(!error_code && "compute_index_table: error occured");
 
+    size_t *rearranged_items = malloc(sizeof(size_t) * wc);
+    for (size_t i = 0; i < wc; ++i) { 
+        rearranged_items[i] = -1;
+    }
+
+    for (size_t current_word_index = 0; current_word_index < wc; ++current_word_index) {
+        size_t current_word_length = index_table[current_word_index + 1] - index_table[current_word_index] - 1;
+        size_t shorter_words_count = 0;
+        for (size_t cmp_index = 0; cmp_index < wc; ++cmp_index) { 
+            if (index_table[cmp_index + 1] - index_table[cmp_index] - 1 < current_word_length) {
+                ++shorter_words_count;
+            } 
+        }
+        while (rearranged_items[shorter_words_count] != -1) {
+            ++shorter_words_count;
+        }
+        rearranged_items[shorter_words_count] = current_word_index;
+    }   
+
+    for (size_t i = 0; i < wc - 1; ++i) { 
+        size_t ordered_word_index = rearranged_items[i];
+        size_t ordered_word_length = index_table[ordered_word_index + 1] - index_table[ordered_word_index] - 1;
+        strncpy(dest, reduced_string + (1 + index_table[ordered_word_index]), ordered_word_length);
+        dest += ordered_word_length;
+        dest[0] = ' ';
+        ++dest;
+    }
+    size_t ordered_word_index = rearranged_items[wc - 1];
+    size_t ordered_word_length = index_table[ordered_word_index + 1] - index_table[ordered_word_index] - 1;
+    strncpy(dest, reduced_string + (1 + index_table[ordered_word_index]), ordered_word_length);
 
     free(reduced_string);
     free(index_table);
+    free(rearranged_items);
 }
