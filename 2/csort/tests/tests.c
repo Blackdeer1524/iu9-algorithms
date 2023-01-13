@@ -25,9 +25,9 @@ void test_word_count() {
     generate_wcount_test("     123    3213      ", 2, 8);
 }
 
-#define generate_string_reduction_test(str_lit, expected_lit) do { \
+#define generate_string_reduction_test(str_lit, wc, res_len, expected_lit) do { \
     char *res; \
-    TEST_ASSERT_FALSE(reduce_string(str_lit, strlen(str_lit), &res)); \
+    TEST_ASSERT_FALSE(reduce_string(str_lit, strlen(str_lit), (wc), (res_len), &res)); \
     TEST_ASSERT_EQUAL(strlen(expected_lit), strlen(res)); \
     TEST_ASSERT_EQUAL_CHAR_ARRAY(expected_lit, res, strlen(expected_lit)); \
     free(res); \
@@ -35,13 +35,13 @@ void test_word_count() {
 
 
 void test_string_reduction() {
-    generate_string_reduction_test("1",                      "1");
-    generate_string_reduction_test("     145",               "145");
-    generate_string_reduction_test("123    ",                "123");
-    generate_string_reduction_test("123    3213",            "123 3213");
-    generate_string_reduction_test("   123    3213",         "123 3213");
-    generate_string_reduction_test("123    3213      ",      "123 3213");
-    generate_string_reduction_test("     123    3213      ", "123 3213");
+    generate_string_reduction_test("1",                      1, 1, "1");
+    generate_string_reduction_test("     145",               1, 3, "145");
+    generate_string_reduction_test("123    ",                1, 3, "123");
+    generate_string_reduction_test("123    3213",            2, 8, "123 3213");
+    generate_string_reduction_test("   123    3213",         2, 8, "123 3213");
+    generate_string_reduction_test("123    3213      ",      2, 8, "123 3213");
+    generate_string_reduction_test("     123    3213      ", 2, 8, "123 3213");
 }
 
 

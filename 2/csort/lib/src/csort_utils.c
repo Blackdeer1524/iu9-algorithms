@@ -1,16 +1,18 @@
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
+#include <assert.h>
 
 #include "csort_utils.h"
 
 
-int wcount(char *src, size_t len, size_t *count, size_t *trimmed_string_len) {
+int wcount(char *src, size_t len, size_t *count, size_t *reduced_string_len) {
     if (src == NULL) {
         return 1;
     } 
 
     if (!len) {
-        *trimmed_string_len=0;
+        *reduced_string_len=0;
         return 0;
     }
 
@@ -31,20 +33,14 @@ int wcount(char *src, size_t len, size_t *count, size_t *trimmed_string_len) {
             ++new_str_len;
         }
     }
-    *trimmed_string_len = new_str_len + word_count - 1;  
+    *reduced_string_len = new_str_len + word_count - 1;  
     *count = word_count;
     return 0;
 }
 
-int reduce_string(char *src, size_t len, char **dst) {
+int reduce_string(char *src, size_t len, size_t wc, size_t res_len, char **dst) {
     if (src == NULL || dst == NULL) { 
         return 1;
-    }
-
-    size_t wc, res_len;
-    int error_code = wcount(src, len, &wc, &res_len);
-    if (error_code) {
-        return error_code;
     }
 
     char *res = (char *) malloc(sizeof(char) * (res_len + 1));
@@ -70,7 +66,6 @@ int reduce_string(char *src, size_t len, char **dst) {
     *dst = res;
     return 0;
 }
-
 
 int compute_index_table(char *reduced_src, size_t len, size_t word_count, size_t **dst) {
     if (reduced_src == NULL || dst == NULL) { 
@@ -98,4 +93,24 @@ int compute_index_table(char *reduced_src, size_t len, size_t word_count, size_t
 
     *dst = res;
     return 0;
+}
+
+void csort(char *src, char *dest) {
+    size_t src_length = strlen(src);
+
+    size_t wc, reduced_string_len;
+    int error_code = wcount(src, src_length, &wc, &reduced_string_len); 
+    assert(error_code && "wc: error occured");
+
+    char *reduced_string;
+    error_code = reduce_string(src, src_length, wc, reduced_string_len, &reduced_string);
+    assert(error_code && "reduce_string: error occured");
+
+    size_t *index_table;
+    error_code = compute_index_table(reduced_string, reduced_string_len, wc, &index_table);
+    assert(error_code && "compute_index_table: error occured");
+
+
+    free(reduced_string);
+    free(index_table);
 }
