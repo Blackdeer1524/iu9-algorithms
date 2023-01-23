@@ -13,9 +13,8 @@ int main() {
     char buffer[4];
     buffer[3] = '\0';
 
-    int c;
     bool error = false;
-    while ((c = getc(stdin)) != EOF) {
+    while (getchar() != EOF) {
         buffer[0] = getc(stdin);
         buffer[1] = getc(stdin);
         buffer[2] = getc(stdin);
