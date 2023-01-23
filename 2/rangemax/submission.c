@@ -30,7 +30,7 @@ void free_segment_tree(Node *root) {
 
 
 static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
-    if (array == NULL || !(l <= r || r < size)) {
+    if (array == NULL || !(l <= r && r < size)) {
         return NULL;
     } 
     Node *parent = malloc(sizeof(Node));
