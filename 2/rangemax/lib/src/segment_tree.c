@@ -77,3 +77,39 @@ int get_max(Node *root, size_t l, size_t r, bool *error) {
 
     return max(left_max, right_max);
 }
+
+
+bool update(Node *root, size_t i, int new_value) {
+    if (root == NULL) { 
+        return true;
+    }
+    if (root->l_bound == i && root->l_bound == root->r_bound) {
+        root->value = new_value;
+        return false; 
+    }
+
+    if (root->l_child != NULL) {
+        if (root->l_child->r_bound >= i) {
+            bool error = update(root->l_child, i, new_value); 
+            if (root->r_child != NULL) {
+                root->value = max(root->l_child->value, root->r_child->value);
+            } else {
+                root->value = root->l_child->value;
+            }
+            return error;
+        }
+    }
+
+    if (root->r_child != NULL) {
+        if (root->r_child->l_bound <= i) {
+            bool error = update(root->r_child, i, new_value);
+            if (root->l_child != NULL) {
+                root->value = max(root->l_child->value, root->r_child->value);
+            } else {
+                root->value = root->r_child->value;
+            }
+            return error;
+        }
+    }
+    return true;
+}
