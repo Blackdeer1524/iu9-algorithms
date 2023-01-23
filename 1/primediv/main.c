@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <memory.h>
-#include <assert.h>
+// #include <assert.h>
 
 
 // math.h нужно линковать как либу
@@ -43,23 +43,22 @@ int max_prive_div(int x, bool *error) {
         return -1;
     }
 
-    bool *sieve = malloc(sizeof(bool) * (x_sqrt + 1));
+    bool *sieve = malloc(sizeof(bool) * (x + 1));
 
-    static_assert(sizeof(bool) == 1, "sizeof(bool) != 1");
-    memset(sieve, true, x_sqrt + 1);
+    // static_assert(sizeof(bool) == 1, "sizeof(bool) != 1");
+    memset(sieve, true, x + 1);
     for (int i = 2; i <= x_sqrt; ++i) {
         if (!sieve[i]) {
             continue;
         }
-        for (int j = 2 * i; j <= x_sqrt; j += i) {
+        for (int j = 2 * i; j <= x; j += i) {
             sieve[j] = false;
         }
     }
 
-    int res = x_sqrt;
+    int res = x;
     for (; res > 1; --res) {
         if (sieve[res] && x % res == 0) {
-            res = x / res;
             break;
         }
     }
