@@ -7,11 +7,10 @@ typedef struct Elem Elem;
 
 Elem  *searchlist(Elem *list, int k) {
     while (list != NULL) {
-        if (list->tag != INTEGER ||  list->value.i != k) {
-            list = list->tail;
-            continue;
+        if (list->tag == INTEGER && list->value.i == k) {
+            break;
         }
-        break;
+        list = list->tail;
     }
     return list;
 }
