@@ -3,10 +3,11 @@
 #include <stdbool.h>
 #include <memory.h>
 #include <limits.h>
+#include <inttypes.h>
 // #include <assert.h>
 
 // math.h нужно линковать как либу
-int int_sqrt(int s, bool *error) {
+int64_t int_sqrt(int64_t s, bool *error) {
     if (s < 0) {
         *error = true;
         return 0;
@@ -17,8 +18,8 @@ int int_sqrt(int s, bool *error) {
 		return s;
     }
 
-	int x0 = s / 2;
-	int x1 = ( x0 + s / x0 ) / 2;
+	int64_t x0 = s / 2;
+	int64_t x1 = ( x0 + s / x0 ) / 2;
 	while (x1 < x0) {
 		x0 = x1;
 		x1 = (x0 + s / x0) / 2;
@@ -27,24 +28,18 @@ int int_sqrt(int s, bool *error) {
 }
 
 
-int max_prive_div(int x, bool *error) {
+int64_t max_prive_div(int64_t x, bool *error) {
     if (x == 0) {
         return 0;
     } else if (x < 0) {
-        if (x == INT_MIN) {
-            *error = false;
-            return 2;
-        }
         x = -x;
     }
     if (x == 1) {
         return 1;
-    } else if (x == INT_MAX) {
-        return INT_MAX;
     }
     
     *error = false;
-    int x_sqrt = int_sqrt(x, error);
+    int64_t x_sqrt = int_sqrt(x, error);
     if (*error) {
         return -1;
     }
@@ -53,16 +48,16 @@ int max_prive_div(int x, bool *error) {
 
     // static_assert(sizeof(bool) == 1, "sizeof(bool) != 1");
     memset(sieve, true, x + 1);
-    for (int i = 2; i <= x_sqrt; ++i) {
+    for (int64_t i = 2; i <= x_sqrt; ++i) {
         if (!sieve[i]) {
             continue;
         }
-        for (int j = 2 * i; j <= x; j += i) {
+        for (int64_t j = 2 * i; j <= x; j += i) {
             sieve[j] = false;
         }
     }
 
-    int res = x;
+    int64_t res = x;
     for (; res > 1; --res) {
         if (sieve[res] && x % res == 0) {
             break;
@@ -76,14 +71,14 @@ int max_prive_div(int x, bool *error) {
 
 
 int main() {
-    int x;
-    if (!scanf("%d", &x)) {
+    int64_t x;
+    if (!scanf("%ld", &x)) {
         return EXIT_FAILURE;
     }
 
     bool error = false;
-    int res = max_prive_div(x, &error);
-    if (error || printf("%d", res) < 0) {
+    int64_t res = max_prive_div(x, &error);
+    if (error || printf("%ld", res) < 0) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
