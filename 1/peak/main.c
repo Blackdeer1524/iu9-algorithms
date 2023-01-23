@@ -21,22 +21,21 @@ unsigned long peak(unsigned long nel,
     if (nel <= 1) {
         return nel;
     }
-    unsigned long peak_count = 0;
 
     if (!less(0, 1)) {
-        ++peak_count;
+        return 0;
     }
 
     if (!less(nel - 1, nel - 2)) {
-        ++peak_count;
+        return nel - 1;
     }
 
     for (unsigned long i = 1; i < nel - 1; ++i) {
         if (!less(i, i - 1) && !less(i, i + 1)) {
-            ++peak_count;
+            return i;
         }
     }
-    return peak_count;
+    return 0;
 }
 
 

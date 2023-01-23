@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <memory.h>
+#include <limits.h>
 // #include <assert.h>
-
 
 // math.h нужно линковать как либу
 int int_sqrt(int s, bool *error) {
@@ -31,12 +31,18 @@ int max_prive_div(int x, bool *error) {
     if (x == 0) {
         return 0;
     } else if (x < 0) {
+        if (x == INT_MIN) {
+            *error = false;
+            return 2;
+        }
         x = -x;
     }
     if (x == 1) {
         return 1;
+    } else if (x == INT_MAX) {
+        return INT_MAX;
     }
-
+    
     *error = false;
     int x_sqrt = int_sqrt(x, error);
     if (*error) {
