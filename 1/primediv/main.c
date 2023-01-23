@@ -4,7 +4,6 @@
 #include <memory.h>
 #include <limits.h>
 #include <inttypes.h>
-// #include <assert.h>
 
 // math.h нужно линковать как либу
 int64_t int_sqrt(int64_t s, bool *error) {
@@ -28,6 +27,7 @@ int64_t int_sqrt(int64_t s, bool *error) {
 }
 
 
+
 int64_t max_prive_div(int64_t x, bool *error) {
     if (x == 0) {
         return 0;
@@ -44,22 +44,19 @@ int64_t max_prive_div(int64_t x, bool *error) {
         return -1;
     }
 
-    bool *sieve = malloc(sizeof(bool) * (x + 1));
-
-    // static_assert(sizeof(bool) == 1, "sizeof(bool) != 1");
-    memset(sieve, true, x + 1);
+    bool *sieve = calloc((x + 1), sizeof(bool));
     for (int64_t i = 2; i <= x_sqrt; ++i) {
-        if (!sieve[i]) {
+        if (sieve[i]) {
             continue;
         }
-        for (int64_t j = 2 * i; j <= x; j += i) {
-            sieve[j] = false;
+        for (int64_t j = i * i; j <= x; j += i) {
+            sieve[j] = true;
         }
     }
 
     int64_t res = x;
     for (; res > 1; --res) {
-        if (sieve[res] && x % res == 0) {
+        if (!sieve[res] && x % res == 0) {
             break;
         }
     }
