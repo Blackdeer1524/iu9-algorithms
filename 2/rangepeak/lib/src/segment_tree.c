@@ -80,13 +80,23 @@ Node *build_segment_tree(int *array, size_t size) {
 }
 
 
-size_t get_peak_count(Node *root, size_t l, size_t r, bool *error) {
+static size_t calculate_peak_count(
+    Node *root, 
+    size_t l, 
+    size_t r, 
+    bool *left_is_peak, 
+    bool *right_is_peak, 
+    bool *error) {
     if (root == NULL) {
         *error = true;
-        return 0;
     }
+    if (*error) {
+        return 0;
+    } 
     
-    if (l <= root->l_bound && root->r_bound <= r) {         // <----------------------------------------
+    if (l == root->l_bound && root->r_bound == r) {         // <----------------------------------------
+        *left_is_peak = root->leftmost_info.is_peak;        //                                          |
+        *right_is_peak = root->rightmost_info.is_peak;      //                                          |
         return root->peak_count;                            //                                          |
     }                                                       //                                          |                                                 
                                                             //                                          | 
@@ -97,28 +107,33 @@ size_t get_peak_count(Node *root, size_t l, size_t r, bool *error) {
     
     size_t total_peak_count = 0;
     if (l <= root->l_child->r_bound && root->r_child->l_bound <= r) {
-        size_t left_peak_count = get_peak_count(root->l_child, l, root->l_child->r_bound, error);
+        bool placeholder = false;  // просто заглушка, нигде дальше не юзается
+        size_t left_peak_count = calculate_peak_count(root->l_child, l, root->l_child->r_bound, &placeholder, right_is_peak, error);
+        size_t right_peak_count = calculate_peak_count(root->r_child, root->r_child->l_bound, r, left_is_peak, &placeholder, error);
         if (*error) {
             return 0;
         }
-        size_t right_peak_count = get_peak_count(root->r_child, root->r_child->l_bound, r, error);
-        if (*error) {
-            return 0;
-        }
-        
         total_peak_count = left_peak_count + right_peak_count;
-        bool left_peak_is_overwritten  = root->l_child->rightmost_info.is_peak && root->r_child->leftmost_info.value  > root->l_child->rightmost_info.value;
-        bool right_peak_is_overwritten = root->r_child->leftmost_info.is_peak  && root->l_child->rightmost_info.value > root->r_child->leftmost_info.value;
+               
+        bool left_peak_is_overwritten  = *right_is_peak && root->r_child->leftmost_info.value  > root->l_child->rightmost_info.value;
+        bool right_peak_is_overwritten = *left_is_peak  && root->l_child->rightmost_info.value > root->r_child->leftmost_info.value;
         if (left_peak_is_overwritten || right_peak_is_overwritten) {
             --total_peak_count;
         }
     } else if (l <= root->l_child->r_bound) {
-        total_peak_count = get_peak_count(root->l_child, l, min(r, root->l_child->r_bound), error);
+        total_peak_count = calculate_peak_count(root->l_child, l, min(r, root->l_child->r_bound), left_is_peak, right_is_peak, error);
     } else if (root->r_child->l_bound <= r) {
-        total_peak_count = get_peak_count(root->r_child, max(l, root->r_child->l_bound), r, error);
+        total_peak_count = calculate_peak_count(root->r_child, max(l, root->r_child->l_bound), r, left_is_peak, right_is_peak, error);
     }
     
     return total_peak_count;
+}
+
+
+size_t get_peak_count(Node *root, size_t l, size_t r, bool *error) {
+    bool left_is_peak = false;
+    bool right_is_peak = false;
+    return calculate_peak_count(root, l, r, &left_is_peak, &right_is_peak, error);
 }
 
 
