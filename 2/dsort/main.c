@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
+#include <stdbool.h>
+
 
 void inplace_csort(char *data, size_t length) {
     size_t counting[26] = {};
@@ -12,11 +14,13 @@ void inplace_csort(char *data, size_t length) {
         counting[i] += counting[i-1];
     }
     
-    for (int i = 25; i > 0; --i) {
+    bool break_flag = false;
+    for (int i = 25; !break_flag && i > 0; --i) {
         char letter = i + 'a';
         while (counting[i] >= counting[i - 1]) {
             if (counting[i] == 0) {
-                goto done;
+                break_flag = true;
+                break;
             }
             data[--counting[i]] = letter;
         }
@@ -25,8 +29,6 @@ void inplace_csort(char *data, size_t length) {
     while (counting[0]) {
         data[--counting[0]] = 'a';
     }
-
-    done:;
 }
 
 
