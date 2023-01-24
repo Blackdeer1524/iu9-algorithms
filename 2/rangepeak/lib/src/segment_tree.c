@@ -120,6 +120,8 @@ static size_t calculate_peak_count(
         if (left_peak_is_overwritten || right_peak_is_overwritten) {
             --total_peak_count;
         }
+        *left_is_peak = false;
+        *right_is_peak = false;
     } else if (l <= root->l_child->r_bound) {
         total_peak_count = calculate_peak_count(root->l_child, l, min(r, root->l_child->r_bound), left_is_peak, right_is_peak, error);
     } else if (root->r_child->l_bound <= r) {

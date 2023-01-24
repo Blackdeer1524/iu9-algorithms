@@ -25,21 +25,9 @@ int main() {
         buffer[1] = getchar();
         buffer[2] = getchar();
 
-        if (!strcmp(buffer, "END")) {
+        if (!strncmp(buffer, "END", 3)) {
             break;
-        } 
-        buffer[3] = getchar();
-        
-        if (!strcmp(buffer, "PEAK")) {
-            size_t l, r;
-            scanf("%zu %zu", &l, &r);
-
-            size_t res = get_peak_count(tree, l, r, &error);
-            if (error) {
-                break;
-            }
-            printf("%zu\n", res);
-        } else if (!strcmp(buffer, "UPD")) {
+        } else if (!strncmp(buffer, "UPD", 3)) {
             size_t index;
             int new_value;
             scanf("%zu %d", &index, &new_value);
@@ -48,7 +36,19 @@ int main() {
                 break;
             }
         } else {
-            printf("afsdads");
+            buffer[3] = getchar();
+            if (!strncmp(buffer, "PEAK", 4)) {
+                size_t l, r;
+                scanf("%zu %zu", &l, &r);
+
+                size_t res = get_peak_count(tree, l, r, &error);
+                if (error) {
+                    break;
+                }
+                printf("%zu\n", res);
+            } else {
+                printf("afsdads");
+            }
         }
     }
 

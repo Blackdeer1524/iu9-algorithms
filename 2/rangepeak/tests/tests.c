@@ -140,11 +140,13 @@ void test_get_peak_count(void) {
         TEST_ASSERT_EQUAL(2, get_peak_count(built_tree, 5, 9, &error));
         TEST_ASSERT_FALSE(error);
 
-        TEST_ASSERT_EQUAL(2, get_peak_count(built_tree, 2, 7, &error));
+        TEST_ASSERT_EQUAL(3, get_peak_count(built_tree, 1, 7, &error));
+        TEST_ASSERT_FALSE(error);
+
+        TEST_ASSERT_EQUAL(4, get_peak_count(built_tree, 0, 9, &error));
         TEST_ASSERT_FALSE(error);
         free_segment_tree(built_tree);
     }
-
 }
 
 
