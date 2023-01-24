@@ -7,40 +7,42 @@
 int main() {
     // FILE* stdin = fopen("./input.txt", "r");
     size_t n;
-    fscanf(stdin, "%zu", &n);
+    scanf("%zu", &n);
 
     int *array = malloc(n * sizeof(int));
     for (size_t i = 0; i < n; ++i) {
-        fscanf(stdin, "%d", array + i);
+        scanf("%d", array + i);
     }
 
     Node *tree = build_segment_tree(array, n);
 
-    char buffer[4];
-    buffer[3] = '\0';
+    char buffer[5];
+    buffer[4] = '\0';
 
-    int c;
     bool error = false;
-    while ((c = getc(stdin)) != EOF) {
-        buffer[0] = getc(stdin);
-        buffer[1] = getc(stdin);
-        buffer[2] = getc(stdin);
+    while (getchar() != EOF) {
+        buffer[0] = getchar();
+        buffer[1] = getchar();
+        buffer[2] = getchar();
 
         if (!strcmp(buffer, "END")) {
             break;
-        } else if (!strcmp(buffer, "MAX")) {
+        } 
+        buffer[3] = getchar();
+        
+        if (!strcmp(buffer, "PEAK")) {
             size_t l, r;
-            fscanf(stdin, "%zu %zu", &l, &r);
+            scanf("%zu %zu", &l, &r);
 
-            int res = get_max(tree, l, r, &error);
+            size_t res = get_peak_count(tree, l, r, &error);
             if (error) {
                 break;
             }
-            printf("%d\n", res);
+            printf("%zu\n", res);
         } else if (!strcmp(buffer, "UPD")) {
             size_t index;
             int new_value;
-            fscanf(stdin, "%zu %d", &index, &new_value);
+            scanf("%zu %d", &index, &new_value);
 
             if (update(tree, index, new_value)) {
                 break;
