@@ -33,7 +33,7 @@ int main() {
             break;
         }
         int res = interval_gcd(tree, l, r);
-        if (printf("%d", res) < 0) { 
+        if (printf("%d\n", res) < 0) { 
             status = EXIT_FAILURE;
             break;
         }
