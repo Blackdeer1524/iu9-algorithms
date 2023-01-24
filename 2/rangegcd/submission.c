@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -16,6 +15,23 @@ typedef struct Node{
     size_t r_bound;
 } Node;
 
+#define abs(x) ((x) > 0 ? (x) : (-x))
+
+int gcd(int left, int right) {
+    if (left < 0 || right < 0) {
+        return -1;
+    } 
+
+    while (left != 0 && right != 0) {
+        if (left > right) {
+            left %= right;
+        } else {
+            right %= left;
+        }
+    }
+    return left + right;
+}
+
 
 void free_segment_tree(Node *root) {
     if (root == NULL) {
@@ -25,8 +41,6 @@ void free_segment_tree(Node *root) {
     free_segment_tree(root->r_child);
     free(root);
 }
-
-#define max(x, y) ((x) > (y) ? (x) : (y))
 
 
 static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
@@ -41,7 +55,7 @@ static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
     parent->r_bound=r;
 
     if (l == r) {
-        parent->value=array[l];
+        parent->value=abs(array[l]);
         return parent;
     } 
 
@@ -54,7 +68,7 @@ static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
         free_segment_tree(parent);
         return NULL;
     }
-    parent->value = max(parent->l_child->value, parent->r_child->value);
+    parent->value = gcd(parent->l_child->value, parent->r_child->value);
     parent->l_child->parent = parent;
     parent->r_child->parent = parent;
     return parent;
@@ -69,28 +83,34 @@ Node *build_segment_tree(int *array, size_t size) {
 }
 
 
-int get_max(Node *root, size_t l, size_t r, bool *error) {
-    if (root == NULL) {
-        *error = true;
-        return INT_MIN;
+int interval_gcd(Node *root, size_t l, size_t r) {
+    if (root == NULL || l > r) {
+        return -1;
     }
-    
-    if (root->r_bound < l || root->l_bound > r) {
-        return INT_MIN;
-    } else if (l <= root->l_bound && root->r_bound <= r) { 
+
+    if (l == root->l_bound && root->r_bound == r) {
         return root->value;
-    } 
-
-    int left_max = get_max(root->l_child, l, r, error);
-    if (*error) {
-        return INT_MIN;
-    }
-    int right_max = get_max(root->r_child, l, r, error);
-    if (*error) {
-        return INT_MIN;
     }
 
-    return max(left_max, right_max);
+    if (root->l_child == NULL || root->r_child == NULL) {        
+        return -1;
+    }
+
+    if (l <= root->l_child->r_bound && root->r_child->l_bound <= r) {
+        int left_gcd, right_gcd;
+        if ((left_gcd = interval_gcd(root->l_child, l, root->l_child->r_bound)) == -1) {
+            return -1;
+        }
+        if ((right_gcd = interval_gcd(root->r_child, root->r_child->l_bound, r)) == -1) {
+            return -1;
+        } 
+        return gcd(left_gcd, right_gcd);
+    } else if (l <= root->l_child->r_bound) {
+        return interval_gcd(root->l_child, l, r);
+    } else if (root->r_child->l_bound <= r) {
+        return interval_gcd(root->r_child, l, r);
+    }
+    return -1;
 }
 
 
@@ -99,85 +119,61 @@ bool update(Node *root, size_t i, int new_value) {
         return true;
     }
     if (root->l_bound == i && root->l_bound == root->r_bound) {
-        root->value = new_value;
+        root->value = abs(new_value);
         return false; 
     }
 
-    if (root->l_child != NULL) {
-        if (root->l_child->r_bound >= i) {
-            bool error = update(root->l_child, i, new_value); 
-            if (root->r_child != NULL) {
-                root->value = max(root->l_child->value, root->r_child->value);
-            } else {
-                root->value = root->l_child->value;
-            }
-            return error;
-        }
+    if (root->l_child == NULL || root->r_child == NULL) {
+        return true;
     }
 
-    if (root->r_child != NULL) {
-        if (root->r_child->l_bound <= i) {
-            bool error = update(root->r_child, i, new_value);
-            if (root->l_child != NULL) {
-                root->value = max(root->l_child->value, root->r_child->value);
-            } else {
-                root->value = root->r_child->value;
-            }
-            return error;
-        }
+    bool error = true;
+    if (i <= root->l_child->r_bound) {
+        error = update(root->l_child, i, new_value); 
+    } else if (root->r_child->l_bound <= i) {
+        error = update(root->r_child, i, new_value);
     }
-    return true;
+    root->value = gcd(root->l_child->value, root->r_child->value);
+    return error;
 }
 
 
-
 int main() {
-    // FILE* stdin = fopen("./input.txt", "r");
     size_t n;
-    scanf("%zu", &n);
+    if (scanf("%zu", &n) != 1) {
+        return EXIT_FAILURE;
+    }
 
     int *array = malloc(n * sizeof(int));
     for (size_t i = 0; i < n; ++i) {
-        scanf("%d", array + i);
+        if (scanf("%d", array + i) != 1) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    size_t m;
+    if (scanf("%zu", &m) != 1) {
+        free(array);
+        return EXIT_FAILURE;
     }
 
     Node *tree = build_segment_tree(array, n);
 
-    char buffer[4];
-    buffer[3] = '\0';
-
-    int c;
-    bool error = false;
-    while ((c = getchar()) != EOF) {
-        buffer[0] = getchar();
-        buffer[1] = getchar();
-        buffer[2] = getchar();
-
-        if (!strcmp(buffer, "END")) {
+    int status = EXIT_SUCCESS;
+    for (size_t i = 0; i < m; ++i) {
+        size_t l, r;
+        if (scanf("%zu %zu", &l, &r) != 2) {
+            status = EXIT_FAILURE;
             break;
-        } else if (!strcmp(buffer, "MAX")) {
-            size_t l, r;
-            scanf("%zu %zu", &l, &r);
-
-            int res = get_max(tree, l, r, &error);
-            if (error) {
-                break;
-            }
-            printf("%d\n", res);
-        } else if (!strcmp(buffer, "UPD")) {
-            size_t index;
-            int new_value;
-            scanf("%zu %d", &index, &new_value);
-
-            if (update(tree, index, new_value)) {
-                break;
-            }
-        } else {
-            printf("afsdads");
+        }
+        int res = interval_gcd(tree, l, r);
+        if (printf("%d", res) < 0) { 
+            status = EXIT_FAILURE;
+            break;
         }
     }
 
     free(array);
     free_segment_tree(tree);
-    return error;
+    return status;
 }

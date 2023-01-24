@@ -5,52 +5,41 @@
 
 
 int main() {
-    // FILE* stdin = fopen("./input.txt", "r");
     size_t n;
-    fscanf(stdin, "%zu", &n);
+    if (scanf("%zu", &n) != 1) {
+        return EXIT_FAILURE;
+    }
 
     int *array = malloc(n * sizeof(int));
     for (size_t i = 0; i < n; ++i) {
-        fscanf(stdin, "%d", array + i);
+        if (scanf("%d", array + i) != 1) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    size_t m;
+    if (scanf("%zu", &m) != 1) {
+        free(array);
+        return EXIT_FAILURE;
     }
 
     Node *tree = build_segment_tree(array, n);
 
-    char buffer[4];
-    buffer[3] = '\0';
-
-    int c;
-    bool error = false;
-    while ((c = getc(stdin)) != EOF) {
-        buffer[0] = getc(stdin);
-        buffer[1] = getc(stdin);
-        buffer[2] = getc(stdin);
-
-        if (!strcmp(buffer, "END")) {
+    int status = EXIT_SUCCESS;
+    for (size_t i = 0; i < m; ++i) {
+        size_t l, r;
+        if (scanf("%zu %zu", &l, &r) != 2) {
+            status = EXIT_FAILURE;
             break;
-        } else if (!strcmp(buffer, "MAX")) {
-            size_t l, r;
-            fscanf(stdin, "%zu %zu", &l, &r);
-
-            int res = get_max(tree, l, r, &error);
-            if (error) {
-                break;
-            }
-            printf("%d\n", res);
-        } else if (!strcmp(buffer, "UPD")) {
-            size_t index;
-            int new_value;
-            fscanf(stdin, "%zu %d", &index, &new_value);
-
-            if (update(tree, index, new_value)) {
-                break;
-            }
-        } else {
-            printf("afsdads");
+        }
+        int res = interval_gcd(tree, l, r);
+        if (printf("%d", res) < 0) { 
+            status = EXIT_FAILURE;
+            break;
         }
     }
 
     free(array);
     free_segment_tree(tree);
-    return error;
+    return status;
 }
