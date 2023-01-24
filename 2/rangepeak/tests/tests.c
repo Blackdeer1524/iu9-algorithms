@@ -106,23 +106,28 @@ void test_tree_build(void) {
 }
 
 
-// void test_get_max(void) { 
-//                 // 0  1   2   3  4  5  6
-//     int given[] = {4, 9, 13, 18, 1, 2, 3};
-//     Node *built_tree = build_segment_tree(given, sizeof(given) / sizeof(given[0]));
+void test_get_peak_count(void) { 
+    int given[] = {1, 1, 2, 1, 0, 1};
+    Node *built_tree = build_segment_tree(given, sizeof(given) / sizeof(given[0]));
 
-//     bool error = false;
-//     TEST_ASSERT_EQUAL(18, get_max(built_tree, 0, 4, &error));
-//     TEST_ASSERT_FALSE(error);
+    bool error = false;
+    TEST_ASSERT_EQUAL(1, get_peak_count(built_tree, 0, 0, &error));
+    TEST_ASSERT_FALSE(error);
 
-//     TEST_ASSERT_EQUAL(3, get_max(built_tree, 4, 6, &error));
-//     TEST_ASSERT_FALSE(error);
+    TEST_ASSERT_EQUAL(2, get_peak_count(built_tree, 0, 2, &error));
+    TEST_ASSERT_FALSE(error);
 
-//     TEST_ASSERT_EQUAL(4, get_max(built_tree, 0, 0, &error));
-//     TEST_ASSERT_FALSE(error);
+    TEST_ASSERT_EQUAL(2, get_peak_count(built_tree, 0, 3, &error));
+    TEST_ASSERT_FALSE(error);
 
-//     free_segment_tree(built_tree);
-// }
+    TEST_ASSERT_EQUAL(1, get_peak_count(built_tree, 1, 3, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(2, get_peak_count(built_tree, 3, 5, &error));
+    TEST_ASSERT_FALSE(error);
+
+    free_segment_tree(built_tree);
+}
 
 
 // void test_update(void) {
@@ -145,7 +150,7 @@ int main() {
     UNITY_BEGIN();
 
     RUN_TEST(test_tree_build);
-    // RUN_TEST(test_get_max);
+    RUN_TEST(test_get_peak_count);
     // RUN_TEST(test_update);
 
     return UNITY_END();
