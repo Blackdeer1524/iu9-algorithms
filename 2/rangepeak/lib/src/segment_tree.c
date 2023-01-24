@@ -12,7 +12,7 @@ void free_segment_tree(Node *root) {
 }
 
 #define max(x, y) ((x) > (y) ? (x) : (y))
-
+#define min(x, y) ((x) < (y) ? (x) : (y))
 
 static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
     if (array == NULL || !(l <= r && r < size)) {
@@ -97,11 +97,11 @@ size_t get_peak_count(Node *root, size_t l, size_t r, bool *error) {
     
     size_t total_peak_count = 0;
     if (l <= root->l_child->r_bound && root->r_child->l_bound <= r) {
-        size_t left_peak_count = get_peak_count(root->l_child, l, r, error);
+        size_t left_peak_count = get_peak_count(root->l_child, l, root->l_child->r_bound, error);
         if (*error) {
             return 0;
         }
-        size_t right_peak_count = get_peak_count(root->r_child, l, r, error);
+        size_t right_peak_count = get_peak_count(root->r_child, root->r_child->l_bound, r, error);
         if (*error) {
             return 0;
         }
@@ -113,11 +113,11 @@ size_t get_peak_count(Node *root, size_t l, size_t r, bool *error) {
             --total_peak_count;
         }
     } else if (l <= root->l_child->r_bound) {
-        total_peak_count = get_peak_count(root->l_child, l, r, error);
+        total_peak_count = get_peak_count(root->l_child, l, min(r, root->l_child->r_bound), error);
     } else if (root->r_child->l_bound <= r) {
-        total_peak_count = get_peak_count(root->r_child, l, r, error);
+        total_peak_count = get_peak_count(root->r_child, max(l, root->r_child->l_bound), r, error);
     }
-
+    
     return total_peak_count;
 }
 
