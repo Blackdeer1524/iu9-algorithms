@@ -63,7 +63,9 @@ static Node *build_tree(int *array, size_t size, size_t l, size_t r) {
             } else {
                 parent->rightmost_info.is_peak = false;
             }
-        }
+        } else if (l == r - 2 && left_peak_is_overwritten) {
+            parent->leftmost_info.is_peak = false;
+        } 
     }
 
     return parent;
@@ -135,12 +137,11 @@ bool update(Node *root, size_t i, int new_value) {
         return true;
     }
 
-    if (root->l_child->r_bound >= i) {
+    if (root->l_child->l_bound <= i && i <= root->l_child->r_bound) {
         if (update(root->l_child, i, new_value)) {
             return true;
         }
-    }
-    if (root->r_child->l_bound <= i) {
+    } else if (root->r_child->l_bound <= i && i <= root->r_child->r_bound) {
         if (update(root->r_child, i, new_value)) {
             return true;
         }
@@ -156,6 +157,15 @@ bool update(Node *root, size_t i, int new_value) {
 
     if (left_peak_is_overwritten || right_peak_is_overwritten) {
         --root->peak_count;
+        if (root->l_bound == root->r_bound - 1) {
+            if (left_peak_is_overwritten) {
+                root->leftmost_info.is_peak = false;
+            } else {
+                root->rightmost_info.is_peak = false;
+            }
+        } else if (root->l_bound == root->r_bound - 2 && left_peak_is_overwritten) {
+            root->leftmost_info.is_peak = false;
+        } 
     }
 
     return false;
