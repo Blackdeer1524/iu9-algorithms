@@ -6,7 +6,7 @@
 Table table;
 
 void setUp(void) {
-    table = table_build(3);
+    table = table_build(3, 3);
     table.data[0] = 3;
     table.data[1] = 1;
     table.data[2] = 1;
