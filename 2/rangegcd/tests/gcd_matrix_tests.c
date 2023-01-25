@@ -69,12 +69,44 @@ void test_gcd_matrix(void) {
 }
 
 
+void test_interval_gcd(void) {
+    table_item_t array[9] = {-3, 1, 5, 10, 13, 26, -52, 0, 10};
+    bool error = false;
+    Table gcd_table = get_gcd_table(array, sizeof(array) / sizeof(array[0]), &error);
+    TEST_ASSERT_FALSE(error);
+    
+    TEST_ASSERT_EQUAL(1, interval_gcd(&gcd_table, 1, 1, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(1, interval_gcd(&gcd_table, 0, 1, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(10, interval_gcd(&gcd_table, 8, 8, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(10, interval_gcd(&gcd_table, 7, 8, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(1, interval_gcd(&gcd_table, 0, 8, &error));
+    TEST_ASSERT_FALSE(error);
+    
+    TEST_ASSERT_EQUAL(13, interval_gcd(&gcd_table, 4, 7, &error));
+    TEST_ASSERT_FALSE(error);
+
+    TEST_ASSERT_EQUAL(2, interval_gcd(&gcd_table, 6, 9, &error));
+    TEST_ASSERT_FALSE(error);
+
+    table_free(&gcd_table);
+}
+
+
 int main() {
     UNITY_BEGIN();
 
     RUN_TEST(test_gcd);
     RUN_TEST(test_log2);
     RUN_TEST(test_gcd_matrix);
+    RUN_TEST(test_interval_gcd);
 
     return UNITY_END();
 }
