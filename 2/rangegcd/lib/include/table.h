@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define DEBUG_
-
 #ifdef DEBUG_
     #include <stdio.h>
     #include <errno.h>
@@ -27,14 +25,19 @@ typedef struct {
 } Table;
 
 
-inline Table talbe_build(size_t N) {
+inline Table table_build(size_t N) {
     size_t total_size = N * (N + 1) / 2;
     Table talbe = {
         .N=N,
-        .data=malloc(total_size * sizeof(size_t)),
+        .data=(size_t *) malloc(total_size * sizeof(size_t)),
         .total_size=total_size
     };
     return talbe;
+}
+
+
+inline void table_free(Table *table) {
+    free(table->data);
 }
 
 
@@ -63,5 +66,11 @@ inline void set_item(Table *table, size_t row, size_t col, size_t item) {
     table->data[index] = item;
 }
 
+
+extern inline Table table_build(size_t N);
+extern inline void table_free(Table *table);
+extern inline size_t _get_index(Table *table, size_t row, size_t col);
+extern inline size_t get_item(Table *table, size_t row, size_t col);
+extern inline void set_item(Table *table, size_t row, size_t col, size_t item);
 
 #endif
