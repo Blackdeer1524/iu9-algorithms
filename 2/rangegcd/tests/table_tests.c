@@ -3,6 +3,13 @@
 #include "table.h"
 
 
+extern inline Table table_build(size_t n_rows, size_t n_cols);
+extern inline void table_free(Table *table);
+extern inline size_t _get_index(Table *table, size_t row, size_t col);
+extern inline table_item_t get_item(Table *table, size_t row, size_t col);
+extern inline void set_item(Table *table, size_t row, size_t col, table_item_t item);
+
+
 Table table;
 
 void setUp(void) {

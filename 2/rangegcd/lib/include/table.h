@@ -30,7 +30,7 @@ inline Table table_build(size_t n_rows, size_t n_cols) {
     Table talbe = {
         .n_rows=n_rows,
         .n_cols=n_cols,
-        .data=(table_item_t *) malloc(n_rows * n_cols * sizeof(table_item_t)),
+        .data=(table_item_t *) calloc(n_rows * n_cols, sizeof(table_item_t)),
     };
     return talbe;
 }
@@ -57,12 +57,5 @@ inline void set_item(Table *table, size_t row, size_t col, table_item_t item) {
     size_t index = _get_index(table, row, col);
     table->data[index] = item;
 }
-
-
-extern inline Table table_build(size_t n_rows, size_t n_cols);
-extern inline void table_free(Table *table);
-extern inline size_t _get_index(Table *table, size_t row, size_t col);
-extern inline table_item_t get_item(Table *table, size_t row, size_t col);
-extern inline void set_item(Table *table, size_t row, size_t col, table_item_t item);
 
 #endif
