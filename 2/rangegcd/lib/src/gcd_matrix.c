@@ -32,7 +32,7 @@ Table get_gcd_table(table_item_t *array, size_t length, bool *error) {
         return gcd_tree;
     }
 
-    int depth = (int) int_log2(length - 1) + 1;
+    int depth = (int) int_log2(length) + 1;
     gcd_tree = table_build(depth, length);
     for (size_t i = 0; i < length; ++i) {
         set_item(&gcd_tree, 0, i, abs(array[i]));
