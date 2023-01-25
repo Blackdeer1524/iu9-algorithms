@@ -73,6 +73,9 @@ size_t interval_gcd(Table *table, size_t l, size_t r, bool *error) {
         if (*error) {
             return 0;
         }
+        if (res == 1) {
+            return 1;
+        }
         l = new_r;
     }
     if ((r + 1) % result_depth_bucket_size != 0) {
@@ -82,10 +85,16 @@ size_t interval_gcd(Table *table, size_t l, size_t r, bool *error) {
         if (*error) {
             return 0;
         }
+        if (res == 1) {
+            return 1;
+        }
         r = new_l;
     }
     for (size_t i = l; i <= r; i += result_depth_bucket_size) {
         res = gcd(res, get_item(table, result_depth, i / result_depth_bucket_size));
+        if (res == 1) {
+            return 1;
+        }
     }
     return res;
 }
