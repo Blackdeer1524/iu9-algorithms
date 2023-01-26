@@ -212,7 +212,7 @@ int main() {
         free(array);
         return EXIT_FAILURE;
     }
-
+    
     bool error = false;
     Table tree = get_gcd_table(array, n, &error);
     if (error) {
@@ -221,6 +221,8 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    size_t *results = (size_t*) malloc(m * sizeof(size_t));
+
     int status = EXIT_SUCCESS;
     for (size_t i = 0; i < m; ++i) {
         size_t l, r;
@@ -228,13 +230,23 @@ int main() {
             status = EXIT_FAILURE;
             break;
         }
-        int res = interval_gcd(&tree, l, r, &error);
-        if (error || printf("%d\n", res) < 0) { 
+        results[i] = interval_gcd(&tree, l, r, &error);
+        if (error) { 
             status = EXIT_FAILURE;
             break;
+        }    
+    }
+    
+    if (status != EXIT_FAILURE) {
+        for (size_t i = 0; i < m; ++i) {
+            if (printf("%zu\n", results[i]) < 0) { 
+                status = EXIT_FAILURE;
+                break;
+            }
         }
     }
 
+    free(results);
     free(array);
     table_free(&tree);
     return status;
