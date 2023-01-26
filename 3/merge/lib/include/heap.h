@@ -4,13 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#if UNIT_TEST
-    #define unit_static 
-#else
-    #define unit_static static
-#endif
-
-
 typedef struct {
     int item;               
     size_t source_index;   // Индекс k-ого массива из которого брали элемент
@@ -25,7 +18,19 @@ typedef struct {
 
 Heap build_heap(size_t capacity, bool *error); 
 
-HeapItem get_max(Heap *heap);
+HeapItem get_minimum(Heap *heap, bool *error);
+
+HeapItem pop_minimum(Heap *heap, bool *error);
+
+bool insert(Heap *heap, HeapItem item);
+
+
+#if UNIT_TEST
+    #define parent(i) (((i) - 1) >> 1)
+    #define left(i) (((i) << 1) + 1)
+    #define right(i) (((i) + 1) << 1)
+#else
+#endif
 
 
 #endif

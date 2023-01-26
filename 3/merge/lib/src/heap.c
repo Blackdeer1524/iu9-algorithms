@@ -20,7 +20,7 @@ Heap build_heap(size_t capacity, bool *error) {
 }
 
 
-unit_static void heapify(Heap *heap, size_t parent_index) {
+static void heapify(Heap *heap, size_t parent_index) {
     int parent_value = heap->data[parent_index].item;
 
     size_t swap_index = parent_index;
@@ -48,11 +48,12 @@ bool insert(Heap *heap, HeapItem item) {
 
     if (!heap->length) {
         heap->data[0] = item;
+        heap->length = 1;
         return false;
     }
     
-    heap->data[heap->length++] = item;
-    size_t i = heap->length - 1;
+    heap->data[heap->length] = item;
+    size_t i = heap->length++;
     do {
         i = parent(i);
         heapify(heap, i);
@@ -62,8 +63,8 @@ bool insert(Heap *heap, HeapItem item) {
 }
 
 
-HeapItem get_maximum(Heap *heap, bool *error) { 
-    HeapItem res;
+HeapItem get_minimum(Heap *heap, bool *error) { 
+    HeapItem res = {};
     if (heap == NULL || heap->length == 0) {
         *error = true;
         return res;
@@ -73,8 +74,8 @@ HeapItem get_maximum(Heap *heap, bool *error) {
 }
 
 
-HeapItem pop_maximum(Heap *heap, bool *error) {
-    HeapItem res;
+HeapItem pop_minimum(Heap *heap, bool *error) {
+    HeapItem res = {};
     if (heap == NULL || heap->length == 0) {
         *error = true;
         return res;
