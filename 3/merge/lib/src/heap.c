@@ -5,8 +5,9 @@
 #define left(i) (((i) << 1) + 1)
 #define right(i) (((i) + 1) << 1)
 
-Heap build_heap(size_t capacity, bool *error) {
-    Heap heap = {
+
+MinHeap build_heap(size_t capacity, bool *error) {
+    MinHeap heap = {
         .data = malloc(sizeof(HeapItem) * capacity),
         .capacity=capacity,
         .length=0
@@ -20,7 +21,7 @@ Heap build_heap(size_t capacity, bool *error) {
 }
 
 
-static void heapify(Heap *heap, size_t parent_index) {
+static void heapify(MinHeap *heap, size_t parent_index) {
     int parent_value = heap->data[parent_index].item;
 
     size_t swap_index = parent_index;
@@ -41,7 +42,8 @@ static void heapify(Heap *heap, size_t parent_index) {
     }
 } 
 
-bool insert(Heap *heap, HeapItem item) { 
+
+bool insert(MinHeap *heap, HeapItem item) { 
     if (heap == NULL || !heap->capacity || heap->length == heap->capacity) {
         return true;
     }
@@ -63,7 +65,7 @@ bool insert(Heap *heap, HeapItem item) {
 }
 
 
-HeapItem get_minimum(Heap *heap, bool *error) { 
+HeapItem get_minimum(MinHeap *heap, bool *error) { 
     HeapItem res = {};
     if (heap == NULL || heap->length == 0) {
         *error = true;
@@ -74,7 +76,7 @@ HeapItem get_minimum(Heap *heap, bool *error) {
 }
 
 
-HeapItem pop_minimum(Heap *heap, bool *error) {
+HeapItem pop_minimum(MinHeap *heap, bool *error) {
     HeapItem res = {};
     if (heap == NULL || heap->length == 0) {
         *error = true;
@@ -85,4 +87,9 @@ HeapItem pop_minimum(Heap *heap, bool *error) {
     heap->data[0] = heap->data[--heap->length];
     heapify(heap, 0);
     return res;
+}
+
+
+void free_heap(MinHeap *heap) {
+    free(heap->data);
 }

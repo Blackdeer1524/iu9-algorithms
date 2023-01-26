@@ -4,26 +4,27 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct {
+typedef struct HeapItem {
     int item;               
     size_t source_index;   // Индекс k-ого массива из которого брали элемент
 } HeapItem;
 
-typedef struct {
+typedef struct MinHeap {
     HeapItem *data;
     size_t capacity;
     size_t length;
-} Heap;
+} MinHeap;
 
 
-Heap build_heap(size_t capacity, bool *error); 
+MinHeap build_heap(size_t capacity, bool *error); 
 
-HeapItem get_minimum(Heap *heap, bool *error);
+bool insert(MinHeap *heap, HeapItem item);
 
-HeapItem pop_minimum(Heap *heap, bool *error);
+HeapItem get_minimum(MinHeap *heap, bool *error);
 
-bool insert(Heap *heap, HeapItem item);
+HeapItem pop_minimum(MinHeap *heap, bool *error);
 
+void free_heap(MinHeap *heap);
 
 #if UNIT_TEST
     #define parent(i) (((i) - 1) >> 1)

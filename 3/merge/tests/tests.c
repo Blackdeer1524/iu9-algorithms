@@ -8,7 +8,7 @@ void setUp(void) {}
 void tearDown(void) {}
 
 
-void assert_min_heap_property(Heap *heap) {
+void assert_min_heap_property(MinHeap *heap) {
     if (heap->length <= 1) {
         return;
     }
@@ -21,7 +21,7 @@ void assert_min_heap_property(Heap *heap) {
 void test_min_heap(void) {
     {
         bool error = false;
-        Heap heap = build_heap(2, &error);
+        MinHeap heap = build_heap(2, &error);
         TEST_ASSERT_FALSE(error);
 
         int test_values[] = {1, 2};
@@ -35,7 +35,7 @@ void test_min_heap(void) {
     }
     {
         bool error = false;
-        Heap heap = build_heap(5, &error);
+        MinHeap heap = build_heap(5, &error);
         TEST_ASSERT_FALSE(error);
 
         int test_values[] = {5, 4, 3, 2, 1};
@@ -53,7 +53,7 @@ void test_min_heap(void) {
 void test_get_min(void) {
     {
         bool error = false;
-        Heap heap = build_heap(5, &error);
+        MinHeap heap = build_heap(5, &error);
         TEST_ASSERT_FALSE(error);
 
         int test_values[] = {5, 4, 3, 2, 1};
