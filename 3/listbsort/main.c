@@ -4,6 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 
+
 typedef struct Elem {
     struct Elem *next;
     char *word;
@@ -68,7 +69,7 @@ void bubble_sort(Elem *head) {
 int main() {
     char *line = NULL;
     size_t allocated_len = 0;
-    ssize_t len = 0;
+    signed long len = 0;
     if ((len = getline(&line, &allocated_len, stdin)) == -1) {
         free(line);
         return EXIT_FAILURE;
