@@ -1,5 +1,6 @@
-#include <stdlib.h>
+#define  _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
@@ -48,9 +49,9 @@ void free_list(Elem *head) {
 }
 
 
-void bubble_sort(Elem *head) {
+struct Elem *bsort(Elem *head) {
     if (head == NULL) {
-        return;
+        return NULL;
     }
 
     bool swapped_items;
@@ -67,6 +68,7 @@ void bubble_sort(Elem *head) {
             current = current->next;
         }
     } while (swapped_items);
+    return head;
 }
 
 
