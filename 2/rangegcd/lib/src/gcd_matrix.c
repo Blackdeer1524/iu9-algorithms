@@ -1,45 +1,25 @@
 #include "gcd_matrix.h"
+#include "math_utils.h"
 
 
-size_t gcd(size_t left, size_t right) {
-    while (left && right) {
-        if (left > right) {
-            left %= right;
-        } else {
-            right %= left;
-        }
-    }
-    return left + right;
-} 
-
-
-size_t int_log2(size_t x) {
-    size_t res = 0;
-    while (x >>= 1) {
-        ++res;
-    }
-    return res;
-}
-
-
-#define abs(x) (((x) > 0) ? (x) : -(x))
-
-
-Table get_gcd_table(table_item_t *array, size_t length, bool *error) {
-    Table gcd_tree;
+LogTable get_gcd_table(table_item_t *array, size_t length, bool *error) {
+    LogTable gcd_tree;
     if (!length) {
         *error = true;
         return gcd_tree;
     }
 
-    int depth = (int) int_log2(length) + 1;
-    gcd_tree = table_build(depth, length);
+    gcd_tree = table_build(length, error);
+    if (*error) {
+        return gcd_tree;
+    }
+
     for (size_t i = 0; i < length; ++i) {
         set_item(&gcd_tree, 0, i, abs(array[i]));
     }
 
     size_t row_width = length;
-    for (int current_depth = 0; current_depth < depth - 1; ++current_depth, row_width = (row_width + 1) >> 1) {
+    for (size_t current_depth = 0; current_depth < gcd_tree.n_rows - 1; ++current_depth, row_width = (row_width + 1) >> 1) {
         bool row_width_is_odd = row_width & 1;
         for (size_t i = 0; i < row_width - row_width_is_odd; i += 2) {
             table_item_t l_child = get_item(&gcd_tree, current_depth, i);
@@ -56,7 +36,7 @@ Table get_gcd_table(table_item_t *array, size_t length, bool *error) {
 }
 
 
-size_t interval_gcd(Table *table, size_t l, size_t r, bool *error) {
+size_t interval_gcd(LogTable *table, size_t l, size_t r, bool *error) {
     if (l > r) {
         *error = true;
         return 0;
