@@ -49,6 +49,10 @@ void free_list(Elem *head) {
 
 
 void bubble_sort(Elem *head) {
+    if (head == NULL) {
+        return;
+    }
+
     bool swapped_items;
     do {
         Elem *current = head;
