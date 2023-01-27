@@ -17,14 +17,14 @@
 
     #define _check_index(log_table_ptr, row, col) do { \
         assertf(row < log_table->n_rows, \
-        "requested row index: %zu]; Max possible index: %zu", \
+        "requested row index: %zu; Max possible index: %zu", \
         row, log_table->n_rows); \
         \
         size_t row_bucket_size = 1 << row; \
         size_t n_buckets_in_row = log_table->n_cols / row_bucket_size + (log_table->n_cols % row_bucket_size != 0); \
         \
         assertf(col < n_buckets_in_row, \
-                "requested index: [%zu][%zu]; Allowed max index for this row: (%zu x %zu)", \
+                "requested index: [%zu][%zu]; Max allowed index for this row: (%zu x %zu)", \
                 row, col, row, n_buckets_in_row - 1); \
     } while(0)
 

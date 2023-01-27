@@ -3,7 +3,7 @@
 inline void table_free(LogTable *log_table);
 
 LogTable table_build(size_t n_cols, bool *error) {
-    size_t n_rows = int_log2(n_cols - 1) + 1;
+    size_t n_rows = int_log2(n_cols) + 1;
 
     LogTable talbe = {
         .n_rows=n_rows,
@@ -11,16 +11,15 @@ LogTable table_build(size_t n_cols, bool *error) {
         .data=NULL
     };
 
-    table_item_t **data = calloc(n_rows, sizeof(table_item_t *));
-    if (data == NULL) {
+    talbe.data = calloc(n_rows, sizeof(table_item_t *));
+    if (talbe.data == NULL) {
         *error = true;
         return talbe;
     }
 
-    talbe.data = data;
     for (size_t i = 0; i < n_rows; ++i) {
         talbe.data[i] = malloc(sizeof(table_item_t) * n_cols);
-        if (data[i] == NULL) {
+        if (talbe.data[i] == NULL) {
             table_free(&talbe);
             break;
         }
@@ -28,6 +27,5 @@ LogTable table_build(size_t n_cols, bool *error) {
     }
     
     *error = false;
-    talbe.data = data;
     return talbe;
 }
