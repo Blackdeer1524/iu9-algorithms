@@ -22,14 +22,6 @@ void insertion_sort(int64_t *base, size_t length) {
 }
 
 
-//void print_arr(int64_t *base, size_t length) {
-//    for (size_t i = 0; i < length; ++i) {
-//        printf("%d ", base[i]);
-//    }
-//    printf("\n");
-//}
-
-
 void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
     assert(l < midpoint);
     assert(midpoint <= r);
@@ -41,7 +33,7 @@ void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
     size_t placeholder_arr_index = 0;
 
     while (l_side_index < midpoint && r_side_index < r) {
-        if (abs(base[l_side_index]) < abs(base[r_side_index])) {
+        if (abs(base[l_side_index]) <= abs(base[r_side_index])) {
             placeholder_array[placeholder_arr_index] = base[l_side_index++];
         } else {
             placeholder_array[placeholder_arr_index] = base[r_side_index++];
@@ -52,11 +44,6 @@ void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
     while (l_side_index < midpoint) {
         placeholder_array[placeholder_arr_index] = base[l_side_index++];
     }
-
-// not needed
-//    while (r_side_index < r) {
-//        placeholder_array[placeholder_arr_index] = base[r_side_index++];
-//    }
 
     for (size_t i = 0; i < placeholder_arr_index; ++i) {
         base[l + i] = placeholder_array[i];
@@ -71,7 +58,7 @@ void merge_sort(int64_t *base, size_t l, size_t r) {
     assert(l <= r);
 
     size_t subarray_length = r - l + 1;
-    if (subarray_length <= 5) {
+    if (subarray_length < 5) {
         insertion_sort(base + l, subarray_length);
         return;
     }
@@ -82,8 +69,6 @@ void merge_sort(int64_t *base, size_t l, size_t r) {
     merge(base, l, midpoint, r);
 }
 
-
-#define SIZE 10
 
 // merge + insertion sort
 int main() {
@@ -96,7 +81,7 @@ int main() {
     }
 
     merge_sort(arr, 0, n - 1);
-    for (size_t i = 0; i < SIZE; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         printf("%ld ", arr[i]);
     }
     return 0;
