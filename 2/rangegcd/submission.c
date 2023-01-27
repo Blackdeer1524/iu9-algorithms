@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define DEBUG_
+// #define DEBUG_
 
 // =====lib/include/math_utils.h============
 
