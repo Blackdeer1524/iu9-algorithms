@@ -72,6 +72,23 @@ struct Elem *bsort(Elem *head) {
 }
 
 
+// Нужна для кейса "al zo"
+Elem *reverse(Elem *start) {
+    if (start == NULL) {
+        return NULL;
+    }
+
+    Elem *prev = NULL;
+    while(start != NULL) {
+        Elem *next_node = start->next;
+        start->next = prev;
+        prev = start;
+        start = next_node;
+    }
+    return prev;
+}   
+
+
 int main() {
     char *line = NULL;
     size_t allocated_len = 0;
@@ -104,7 +121,8 @@ int main() {
         ++start;
     }
 
-    bubble_sort(head);
+    head = reverse(head);
+    bsort(head);
     print_list(head);
     free_list(head);
     free(line);
