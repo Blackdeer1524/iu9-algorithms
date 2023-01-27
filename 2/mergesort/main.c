@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <stdint.h>
 
 #define abs(x) (((x) > 0) ? (x) : -(x))
 
@@ -32,7 +32,7 @@ void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
     size_t r_side_index = midpoint;
     size_t placeholder_arr_index = 0;
 
-    while (l_side_index < midpoint && r_side_index < r) {
+    while (l_side_index < midpoint && r_side_index <= r) {
         if (abs(base[l_side_index]) <= abs(base[r_side_index])) {
             placeholder_array[placeholder_arr_index] = base[l_side_index++];
         } else {
@@ -42,7 +42,7 @@ void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
     }
 
     while (l_side_index < midpoint) {
-        placeholder_array[placeholder_arr_index] = base[l_side_index++];
+        placeholder_array[placeholder_arr_index++] = base[l_side_index++];
     }
 
     for (size_t i = 0; i < placeholder_arr_index; ++i) {
@@ -51,7 +51,6 @@ void merge(int64_t *base, size_t l, size_t midpoint, size_t r) {
 
     free(placeholder_array);
 }
-
 
 
 void merge_sort(int64_t *base, size_t l, size_t r) {
@@ -73,16 +72,23 @@ void merge_sort(int64_t *base, size_t l, size_t r) {
 // merge + insertion sort
 int main() {
     size_t n;
-    scanf("%zu", &n);
+    if (scanf("%zu", &n) != 1) {
+        return 1;
+    }
 
     int64_t *arr = malloc(sizeof(int64_t) * n);
     for (size_t i = 0; i < n; ++i) {
-        scanf("%ld", arr + i);
+        if (scanf("%ld", arr + i) != 1) {
+            free(arr);
+            return 1;
+        }
     }
 
     merge_sort(arr, 0, n - 1);
     for (size_t i = 0; i < n; ++i) {
         printf("%ld ", arr[i]);
     }
+
+    free(arr);
     return 0;
 }
