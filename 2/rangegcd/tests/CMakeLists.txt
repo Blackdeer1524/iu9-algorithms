@@ -1,3 +1,9 @@
+add_executable(math_utils_tests math_utils_tests.c)
+target_link_libraries(math_utils_tests 
+                      libmutils
+                      Unity)
+add_test(math_utils_tests math_utils_tests)
+
 add_executable(rangegcd_table_tests table_tests.c)
 target_link_libraries(rangegcd_table_tests 
                       libtable
