@@ -132,7 +132,7 @@ typedef struct SchedulingInfo {
 } SchedulingInfo;
 
 
-#define min(x, y) (((x) < (y)) ? (x) : (y))
+#define max(x, y) (((x) > (y)) ? (x) : (y))
 
 
 int main() {
@@ -158,11 +158,12 @@ int main() {
     }
 
     if (tasks_count <= clusters_count) {
-        size_t min_time = -1;
+        size_t min_time = 0;
         for (size_t i = 0; i < tasks_count; ++i) {
-            min_time = min(min_time, tasks_scheduling_info[i].end);
+            min_time = max(min_time, tasks_scheduling_info[i].end);
         }
         printf("%zu", min_time);
+        free(tasks_scheduling_info);
         return EXIT_SUCCESS;
     }
 
@@ -206,7 +207,7 @@ int main() {
         }
     }
 
-    size_t min_time = -1;
+    size_t min_time = 0;
     for (size_t i = 0; i < clusters_count; ++i) {
         size_t prev_task_completion_time = pop_minimum(&completion_queue, &error).item;
         if (error) { 
@@ -215,7 +216,7 @@ int main() {
             free(tasks_scheduling_info);
             return EXIT_FAILURE;
         }
-        min_time = min(min_time, prev_task_completion_time);
+        min_time = max(min_time, prev_task_completion_time);
     }
     printf("%zu\n", min_time);
     free_heap(&completion_queue);
