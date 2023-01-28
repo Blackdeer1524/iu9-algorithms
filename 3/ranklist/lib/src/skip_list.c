@@ -85,9 +85,9 @@ bool insert(SkipList *list, int key, char *word) {
         }
     }
 
-    if (cur_search_level) {
+    if (!cur_search_level) {
         sequence_index_per_level[0] = sequence_index_per_level[1];
-        while (update_list[0]->next != NULL && update_list[0]->next->key < key) {
+        while (update_list[0]->next != NULL && update_list[0]->next->key <= key) {
             cur_key = update_list[cur_search_level]->next->key;
             rightmost_node_value_list = &update_list[cur_search_level]->next->values_list;
             update_list[0] = &update_list[0]->next->ptrs_with_distance[0];
