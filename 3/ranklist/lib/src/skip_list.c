@@ -119,7 +119,7 @@ bool insert(SkipList *list, int key, char *word) {
     
     for (size_t i = 0; i < new_node_level; ++i) {
         new_node->ptrs_with_distance[i].next = update_list[i]->next;
-        new_node->ptrs_with_distance[i].distance = (update_list[i]->distance + 1) - (sequence_index_per_level[0] + 1);
+        new_node->ptrs_with_distance[i].distance = (sequence_index_per_level[i] + update_list[i]->distance) - (sequence_index_per_level[0] + 1) + 1;  // (update_list[i]->distance + 1) - (sequence_index_per_level[0] + 1);
         update_list[i]->next = new_node;
         update_list[i]->distance = (sequence_index_per_level[0] + 1) - sequence_index_per_level[i];
     }
