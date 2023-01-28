@@ -15,7 +15,6 @@ SkipList *build_skip_list(size_t max_level) {
         return NULL;
     }
     skip_list->max_level = max_level;
-    skip_list->lenght = 0;
     skip_list->head->key = INT_MIN;
     skip_list->head->level = max_level;
     skip_list->head->values_list = NULL;
@@ -48,6 +47,39 @@ static int generate_level(size_t max_level) {
 #endif
 
 #define min(x, y) (((x) < (y)) ? (x) : (y))
+
+
+bool lookup(SkipList *list, int key, char **res) {
+    if (list == NULL) {
+        *res = NULL; 
+        return true;
+    }
+
+    Node *head = list->head;
+    size_t cur_search_level = list->max_level - 1;
+    while (cur_search_level > 0 && head->key != key) {
+        if (head->ptrs_with_distance[cur_search_level].next == NULL 
+            || head->ptrs_with_distance[cur_search_level].next->key > key) {
+            --cur_search_level;
+        } else {
+            head = head->ptrs_with_distance[cur_search_level].next;
+        }
+    }
+
+    if (!cur_search_level) {
+        while (head->ptrs_with_distance[0].next != NULL && head->ptrs_with_distance[0].next->key <= key) {
+            head = head->ptrs_with_distance[0].next;
+        }
+    }
+
+    if (head->key == key) {
+        *res = head->values_list->value; 
+    } else {
+        *res = NULL; 
+    }
+    return false;
+}
+
 
 bool insert(SkipList *list, int key, char *word) {
     if (list == NULL || word == NULL) {
@@ -112,14 +144,23 @@ bool insert(SkipList *list, int key, char *word) {
     size_t new_node_level = generate_level(list->max_level);
     new_node->level = new_node_level; 
     new_node->ptrs_with_distance = (Pair *) malloc(sizeof(Pair) * new_node_level);
-    
+    new_node->values_list = NULL;
+    LinkedList *placeholder = add_node(new_node->values_list, word);
+    if (placeholder == NULL) {
+        free(new_node);
+        free(sequence_index_per_level);
+        free(update_list);
+        return true;
+    }
+    new_node->values_list = placeholder;
+
     for (size_t i = new_node_level; i < list->max_level; ++i) {
         ++update_list[i]->distance;
     }
     
     for (size_t i = 0; i < new_node_level; ++i) {
         new_node->ptrs_with_distance[i].next = update_list[i]->next;
-        new_node->ptrs_with_distance[i].distance = (sequence_index_per_level[i] + update_list[i]->distance) - (sequence_index_per_level[0] + 1) + 1;  // (update_list[i]->distance + 1) - (sequence_index_per_level[0] + 1);
+        new_node->ptrs_with_distance[i].distance = (sequence_index_per_level[i] + update_list[i]->distance) - (sequence_index_per_level[0] + 1) + 1;
         update_list[i]->next = new_node;
         update_list[i]->distance = (sequence_index_per_level[0] + 1) - sequence_index_per_level[i];
     }

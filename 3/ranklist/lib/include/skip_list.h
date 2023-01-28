@@ -21,13 +21,14 @@ struct Node {
 };
 
 typedef struct SkipList {
-    size_t lenght;
     size_t max_level;
     Node *head;
 } SkipList;
 
 
 SkipList *build_skip_list(size_t max_level);
+
+bool lookup(SkipList *list, int key, char **res);
 
 bool insert(SkipList *list, int key, char *word);
 

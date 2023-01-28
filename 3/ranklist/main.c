@@ -18,23 +18,21 @@ void print_list(SkipList *list) {
     } while (start != NULL);  
 }
 
+#include <assert.h>
+#include <string.h>
+
 int main() {
     // SkipList *a = build_skip_list(2);
-    SkipList *a = build_skip_list(5);
+    SkipList *a = build_skip_list(32);
     srand(42);
     
-    for (size_t i = 8; i > 0; i -= 4) {
-        print_list(a);
-        putchar('\n');
-        insert(a, i, "123");
+    for (size_t i = 0; i <= 1000000; i += rand() % 10) {
+        printf("%zu\n", i);
+        assert(!insert(a, i, "123"));
+        char *b;
+        assert(!lookup(a, i, &b));
+        assert(!strncmp(b, "123", 3));
     }
-
-    for (size_t i = 2; i <= 6; i += 4) {
-        insert(a, i, "123");
-        print_list(a);
-        putchar('\n');
-    }
-    insert(a, 6, "123");
 
 
     // insert(a, 3, "123");
@@ -47,6 +45,6 @@ int main() {
     // insert(a, 4, "123");
 
 
-    // print_list(a);
+    print_list(a);
     return EXIT_SUCCESS;
 }

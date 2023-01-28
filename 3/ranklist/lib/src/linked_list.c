@@ -4,7 +4,7 @@
 LinkedList *add_node(LinkedList *prev, char *value) {
     LinkedList *head = (LinkedList *) malloc(sizeof(LinkedList));
     if (head == NULL) { 
-        return head;
+        return NULL;
     }
     head->next = prev;    
     head->value = value;
