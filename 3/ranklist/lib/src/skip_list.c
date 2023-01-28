@@ -32,6 +32,22 @@ SkipList *build_skip_list(size_t max_level) {
 }
 
 
+void free_skip_list(SkipList *list) {
+    if (list == NULL) {
+        return;
+    }
+    Node *head = list->head;
+    do {
+        Node *next = head->ptrs_with_distance[0].next;
+        free_linked_list(head->values_list);
+        free(head->ptrs_with_distance);
+        free(head);
+        head = next;
+    } while (head != NULL);
+    free(list);
+}
+
+
 static int generate_level(size_t max_level) {
     size_t new_level = 1;
     for (size_t c = 1; c < max_level && !(rand() % 2); ++c) {
@@ -40,11 +56,6 @@ static int generate_level(size_t max_level) {
     return new_level;
 }
 
-#if DEBUG
-    #include <assert.h>
-#else
-    #define assert(expr)
-#endif
 
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -77,6 +88,40 @@ bool lookup(SkipList *list, int key, char **res) {
     } else {
         *res = NULL; 
     }
+    return false;
+}
+
+
+bool rank(SkipList *list, int key, size_t *res) {
+    if (list == NULL) {
+        return true;
+    }
+
+    Node *head = list->head;
+    size_t cur_search_level = list->max_level - 1;
+    size_t sequence_number = 0;
+    while (cur_search_level > 0 && head->key != key) {
+        if (head->ptrs_with_distance[cur_search_level].next == NULL 
+            || head->ptrs_with_distance[cur_search_level].next->key > key) {
+            --cur_search_level;
+        } else {
+            sequence_number += head->ptrs_with_distance[cur_search_level].distance;
+            head = head->ptrs_with_distance[cur_search_level].next;
+        }
+    }
+
+    if (!cur_search_level) {
+        while (head->ptrs_with_distance[0].next != NULL && head->ptrs_with_distance[0].next->key <= key) {
+            sequence_number += head->ptrs_with_distance[0].distance;
+            head = head->ptrs_with_distance[0].next;
+        }
+    }
+
+    if (head->key != key) {
+        *res = 0;
+        return true;
+    } 
+    *res = sequence_number; 
     return false;
 }
 
@@ -204,7 +249,6 @@ bool delete(SkipList *list, int key) {
         }
     }
 
-    assert(!cur_search_level);
     while (update_list[0]->next != NULL && update_list[0]->next->key < key) {
         update_list[0] = &update_list[0]->next->ptrs_with_distance[0];
     }
@@ -228,18 +272,3 @@ bool delete(SkipList *list, int key) {
     return false;
 }
 
-
-void free_skip_list(SkipList *list) {
-    if (list == NULL) {
-        return;
-    }
-    Node *head = list->head;
-    do {
-        Node *next = head->ptrs_with_distance[0].next;
-        free_linked_list(head->values_list);
-        free(head->ptrs_with_distance);
-        free(head);
-        head = next;
-    } while (head != NULL);
-    free(list);
-}

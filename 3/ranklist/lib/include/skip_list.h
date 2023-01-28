@@ -36,4 +36,6 @@ bool delete(SkipList *list, int key);
 
 void free_skip_list(SkipList *list);
 
+bool rank(SkipList *list, int key, size_t *res);
+
 #endif

@@ -15,6 +15,7 @@ LinkedList *add_node(LinkedList *prev, char *value) {
 void free_linked_list(LinkedList *head) {
     while (head != NULL) {
         LinkedList *next = head->next;
+        free(head->value);
         free(head);
         head = next;
     }

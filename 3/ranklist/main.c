@@ -1,11 +1,19 @@
-#include <stdlib.h>
+#define  _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "skip_list.h"
 
 void print_list(SkipList *list) {
     Node *start = list->head;
     do {
-        printf("[%2zu] %11d | ", start->level, start->key);
+        printf("[%2zu] %11d->", start->level, start->key);
+        if (start->values_list == NULL) {
+            printf("%s", "NULL");
+        } else {
+            printf("\"%s\"", start->values_list->value);
+        }
+        printf("%s", " | ");
         for (size_t i = 0; i < start->level; ++i) {
             if (start->ptrs_with_distance[i].next == NULL) {
                 printf("(NULL, %zu) ", start->ptrs_with_distance[i].distance);
@@ -18,39 +26,77 @@ void print_list(SkipList *list) {
     } while (start != NULL);  
 }
 
-#include <assert.h>
-#include <string.h>
 
 int main() {
-    // SkipList *a = build_skip_list(2);
-    SkipList *a = build_skip_list(32);
     srand(42);
+    SkipList *skip_list = build_skip_list(32);
     
-    for (size_t i = 0; i <= 10; i += rand() % 10) {
-        printf("%zu\n", i);
-        assert(!insert(a, i, "123"));
-        // char *b;
+    char buffer[8] = {};
+    int status = EXIT_SUCCESS;
+    do {
+        if (scanf("%s", buffer) != 1) {
+            status = EXIT_FAILURE;
+            break;
+        } 
+        if (!strncmp(buffer, "INSERT", 6)) {
+            int k;
+            if (scanf("%d", &k) != 1) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            char *v = NULL;
+            size_t allocated_space_for_input = 0;
+            signed long long actual_length;
+            if ((actual_length = getline(&v, &allocated_space_for_input, stdin)) == -1) {
+                status = EXIT_FAILURE;
+                free(v);
+                break;
+            }
+            v[actual_length - 1] = '\0';
+            if (insert(skip_list, k, v)) {
+                status = EXIT_FAILURE;
+                free(v);
+                break;
+            }
+        } else if (!strncmp(buffer, "DELETE", 6)) {
+            int k;
+            if (scanf("%d", &k) != 1) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            if (delete(skip_list, k)) {
+                status = EXIT_FAILURE;
+                break;
+            }
+        } else if (!strncmp(buffer, "LOOKUP", 6)) {
+            int k;
+            if (scanf("%d", &k) != 1) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            char *res;
+            if (lookup(skip_list, k, &res)) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            printf("%s\n", res);
+        } else if (!strncmp(buffer, "RANK", 4)) {
+            int k;
+            if (scanf("%d", &k) != 1) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            size_t res;
+            if (rank(skip_list, k, &res)) {
+                status = EXIT_FAILURE;
+                break;
+            }
+            printf("%zu\n", res - 1);
+        } else if (!strncmp(buffer, "PRINT", 5)) {
+            print_list(skip_list);
+        }
+    } while (strncmp(buffer, "END", 3));
 
-        // assert(!lookup(a, i, &b));
-        // assert(!strncmp(b, "123", 3));
-        // assert(!delete(a, i));
-        // assert(!lookup(a, i, &b));
-        // assert(!lookup(a, i, &b));
-        // assert(b == NULL);
-    }
-
-
-    // insert(a, 3, "123");
-    // insert(a, -1, "123");
-    // insert(a, 0, "123");
-    // insert(a, 1, "123");
-    // insert(a, 2, "123");
-    // insert(a, 4, "123");
-    // insert(a, 10, "123");
-    // insert(a, 4, "123");
-
-
-    print_list(a);
-    free_skip_list(a);
-    return EXIT_SUCCESS;
+    free_skip_list(skip_list);
+    return status;
 }
