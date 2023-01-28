@@ -26,7 +26,7 @@ SkipList *build_skip_list(size_t max_level) {
         return NULL;
     }
     for (size_t i = 0; i < max_level; ++i) {
-        skip_list->head->ptrs_with_distance[i].distance = 0;
+        skip_list->head->ptrs_with_distance[i].distance = 1;
         skip_list->head->ptrs_with_distance[i].next = NULL;
     }
     return skip_list;
@@ -46,6 +46,8 @@ static int generate_level(size_t max_level) {
 #else
     #define assert(expr)
 #endif
+
+#define min(x, y) (((x) < (y)) ? (x) : (y))
 
 bool insert(SkipList *list, int key, char *word) {
     if (list == NULL || word == NULL) {
@@ -107,15 +109,21 @@ bool insert(SkipList *list, int key, char *word) {
 
     Node *new_node = malloc(sizeof(Node));
     new_node->key = key;
-    
-
     size_t new_node_level = generate_level(list->max_level);
-
-    // update_list[0]->distance = 1;
-    // for (size_t i = 1; i < new_node_level; ++i) {
-    //     update_list[i] -= 
-    // }
+    new_node->level = new_node_level; 
+    new_node->ptrs_with_distance = (Pair *) malloc(sizeof(Pair) * new_node_level);
     
+    for (size_t i = new_node_level; i < list->max_level; ++i) {
+        ++update_list[i]->distance;
+    }
+    
+    for (size_t i = 0; i < new_node_level; ++i) {
+        new_node->ptrs_with_distance[i].next = update_list[i]->next;
+        new_node->ptrs_with_distance[i].distance = (update_list[i]->distance + 1) - (sequence_index_per_level[0] + 1);
+        update_list[i]->next = new_node;
+        update_list[i]->distance = (sequence_index_per_level[0] + 1) - sequence_index_per_level[i];
+    }
+
     free(sequence_index_per_level);
     free(update_list);
     return false;
