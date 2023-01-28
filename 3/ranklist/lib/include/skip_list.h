@@ -34,4 +34,6 @@ bool insert(SkipList *list, int key, char *word);
 
 bool delete(SkipList *list, int key);
 
+void free_skip_list(SkipList *list);
+
 #endif

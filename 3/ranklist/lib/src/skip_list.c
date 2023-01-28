@@ -85,7 +85,7 @@ bool insert(SkipList *list, int key, char *word) {
     if (list == NULL || word == NULL) {
         return true;
     }
-    Pair **update_list = (Pair **) malloc(list->max_level * sizeof(Pair *)); // list->head->ptrs_with_distance;
+    Pair **update_list = (Pair **) malloc(list->max_level * sizeof(Pair *)); 
     if (update_list == NULL) {
         return true;
     }
@@ -226,4 +226,20 @@ bool delete(SkipList *list, int key) {
 
     free(update_list);
     return false;
+}
+
+
+void free_skip_list(SkipList *list) {
+    if (list == NULL) {
+        return;
+    }
+    Node *head = list->head;
+    do {
+        Node *next = head->ptrs_with_distance[0].next;
+        free_linked_list(head->values_list);
+        free(head->ptrs_with_distance);
+        free(head);
+        head = next;
+    } while (head != NULL);
+    free(list);
 }
