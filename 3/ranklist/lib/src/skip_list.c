@@ -133,7 +133,13 @@ bool insert(SkipList *list, int key, char *word) {
             free(update_list);
             return true;
         }
-        *rightmost_node_value_list = add_node(*rightmost_node_value_list, word);
+        LinkedList *placeholder = add_node(*rightmost_node_value_list, word);
+        if (placeholder == NULL) {
+            free(sequence_index_per_level);
+            free(update_list);
+            return true;            
+        }
+        *rightmost_node_value_list = placeholder;
         free(sequence_index_per_level);
         free(update_list);
         return false;
@@ -170,3 +176,54 @@ bool insert(SkipList *list, int key, char *word) {
     return false;
 }
 
+
+bool delete(SkipList *list, int key) {
+    if (list == NULL) {
+        return true;
+    }
+    Pair **update_list = (Pair **) malloc(list->max_level * sizeof(Pair *)); // list->head->ptrs_with_distance;
+    if (update_list == NULL) {
+        return true;
+    }
+
+    for (size_t i = 0; i < list->max_level; ++i) { 
+        update_list[i] = &list->head->ptrs_with_distance[i];
+    }    
+
+    int cur_key = list->head->key;
+    size_t cur_search_level = list->max_level - 1;
+    while (cur_search_level > 0 && cur_key != key) {
+        if (update_list[cur_search_level]->next == NULL 
+            || update_list[cur_search_level]->next->key >= key) {
+            --cur_search_level;
+        } else {
+            cur_key = update_list[cur_search_level]->next->key;
+            for (size_t i = 0; i <= cur_search_level; ++i) {
+                update_list[i] = &update_list[cur_search_level]->next->ptrs_with_distance[i];  
+            }
+        }
+    }
+
+    assert(!cur_search_level);
+    while (update_list[0]->next != NULL && update_list[0]->next->key < key) {
+        update_list[0] = &update_list[0]->next->ptrs_with_distance[0];
+    }
+
+    Node *deleting_node = update_list[0]->next;
+    if (deleting_node == NULL || deleting_node->key != key) {
+        free(update_list);
+        return true;
+    }
+
+    for (size_t i = deleting_node->level; i < list->max_level; ++i) {
+        --update_list[i]->distance;
+    }
+    
+    for (size_t i = 0; i < deleting_node->level; ++i) {
+        update_list[i]->next = deleting_node->ptrs_with_distance[i].next;
+        update_list[i]->distance += deleting_node->ptrs_with_distance[i].distance - 1;
+    }
+
+    free(update_list);
+    return false;
+}

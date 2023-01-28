@@ -32,4 +32,6 @@ bool lookup(SkipList *list, int key, char **res);
 
 bool insert(SkipList *list, int key, char *word);
 
+bool delete(SkipList *list, int key);
+
 #endif

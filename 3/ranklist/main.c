@@ -30,8 +30,13 @@ int main() {
         printf("%zu\n", i);
         assert(!insert(a, i, "123"));
         char *b;
+
         assert(!lookup(a, i, &b));
         assert(!strncmp(b, "123", 3));
+        assert(!delete(a, i));
+        assert(!lookup(a, i, &b));
+        assert(!lookup(a, i, &b));
+        assert(b == NULL);
     }
 
 
