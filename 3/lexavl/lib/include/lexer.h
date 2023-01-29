@@ -1,6 +1,8 @@
 #ifndef IU_ALGOS_LEXER_H
 #define IU_ALGOS_LEXER_H
 
+#include <stdio.h>
+
 typedef enum {
     CONST,
     SPEC,

@@ -4,6 +4,10 @@
 
 #include "avl.h"
 
+
+// Это - основа. Это, так сказать, база
+// https://www.youtube.com/watch?v=jDM6_TnYIqE
+
 static int new_identifier_index = 0;
 
 typedef struct node {
@@ -34,6 +38,18 @@ void print_tree(node *root, char *pref) {
         print_tree(root->right, r_pref);
         free(r_pref);
     }
+}
+
+
+void free_tree(node *root) {
+    if (root == NULL) {
+        return;
+    }
+
+    free_tree(root->left);
+    free_tree(root->right);
+    free(root->identifier_name);
+    free(root);
 }
 
 
@@ -93,10 +109,8 @@ subtree_t avlinsert(struct node **root_ptr, char *identifier_name) {
         return NO_INSERT;
     }
 
-    int cmp = strcmp(root->identifier_name, identifier_name);
-    if (cmp == 0) {
-        return NO_INSERT;
-    } else if (cmp > 0) {
+    int cmp = strcmp(root->identifier_name, identifier_name);    
+    if (cmp > 0) {
         // L
         subtree_t insertion_direction = avlinsert(&root->left, identifier_name);
         fixheight(root);
@@ -213,4 +227,5 @@ subtree_t avlinsert(struct node **root_ptr, char *identifier_name) {
         }
         return RIGHT_T;
     }
+    return NO_INSERT;
 }

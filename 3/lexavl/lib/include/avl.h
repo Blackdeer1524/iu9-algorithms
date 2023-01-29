@@ -13,6 +13,8 @@ typedef enum {
 
 void print_tree(node *root, char *pref);
 
+void free_tree(node *root);
+
 struct node *create_node(char *key, int height);
 
 int avlget(struct node *root, char *identifier_name);

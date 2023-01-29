@@ -1,5 +1,4 @@
 #include <limits.h>
-#include <memory.h>
 #include "skip_list.h"
 
 

@@ -130,7 +130,7 @@ void tokenize(const char *sentence, size_t sentence_length) {
     while ((next_token_start = get_next_token(next_token_start, &new_token_length, &contains_chars)) != NULL) {
         strncpy(buffer, next_token_start, new_token_length);
         buffer[new_token_length] = '\0';
-        printf("value: %s\n", buffer);
+        // printf("value: %s\n", buffer);
 
         lexem next_lexem = classify_token(
                 next_token_start,
@@ -138,8 +138,10 @@ void tokenize(const char *sentence, size_t sentence_length) {
                 contains_chars,
                 &identifier_tree_node);
 
-        printf("<%s> type: %d; value:%d\n", buffer, next_lexem.tag, next_lexem.value);
+        // printf("<%s> type: %d; value:%d\n", buffer, next_lexem.tag, next_lexem.value);
+        printf("%d %d\n", next_lexem.tag, next_lexem.value);
         next_token_start += new_token_length;
     }
+    free_tree(identifier_tree_node);
     free(buffer);
 }
