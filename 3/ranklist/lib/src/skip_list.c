@@ -267,6 +267,9 @@ bool delete(SkipList *list, int key) {
         update_list[i]->distance += deleting_node->ptrs_with_distance[i].distance - 1;
     }
 
+    free(deleting_node->ptrs_with_distance);
+    free_linked_list(deleting_node->values_list);
+    free(deleting_node);
     free(update_list);
     return false;
 }

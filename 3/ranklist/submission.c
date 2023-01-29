@@ -1,3 +1,6 @@
+#define  _GNU_SOURCE
+#include <stdio.h>
+
 // ========./lib/include/skiplist.h=========
 #ifndef LINKED_LIST_H_
 #define LINKED_LIST_H_
@@ -354,15 +357,15 @@ bool delete(SkipList *list, int key) {
         update_list[i]->distance += deleting_node->ptrs_with_distance[i].distance - 1;
     }
 
+    free(deleting_node->ptrs_with_distance);
+    free_linked_list(deleting_node->values_list);
+    free(deleting_node);
     free(update_list);
     return false;
 }
 
 // ========./main.c=========================
 
-
-#define  _GNU_SOURCE
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 // #include "skip_list.h"
