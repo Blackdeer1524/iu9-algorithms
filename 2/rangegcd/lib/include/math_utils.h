@@ -7,6 +7,6 @@
 
 size_t gcd(size_t left, size_t right);
 
-size_t int_log2(size_t x);
+size_t *precompute_log2(size_t x);
 
 #endif

@@ -38,6 +38,7 @@ typedef int table_item_t;
 typedef struct {
     table_item_t **data;
     size_t n_rows, n_cols;
+    size_t *precomputed_logs;
 } LogTable;
 
 
@@ -45,11 +46,12 @@ inline void table_free(LogTable *log_table) {
     for (size_t i = 0; i < log_table->n_rows; ++i) {
         free(log_table->data[i]);
     }
+    free(log_table->precomputed_logs);
     free(log_table->data);
 }
 
 
-LogTable table_build(size_t n_cols, bool *error);
+LogTable *table_build(size_t n_cols);
 
 
 inline table_item_t get_item(LogTable *log_table, size_t row, size_t col) {

@@ -26,14 +26,13 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    bool error = false;
-    LogTable tree = get_gcd_table(array, n, &error);
-    if (error) {
+    LogTable *tree = get_gcd_table(array, n);
+    if (tree == NULL) {
         free(array);
-        table_free(&tree);
         return EXIT_FAILURE;
     }
 
+    bool error = false;
     int status = EXIT_SUCCESS;
     for (size_t i = 0; i < m; ++i) {
         size_t l, r;
@@ -41,7 +40,7 @@ int main() {
             status = EXIT_FAILURE;
             break;
         }
-        int res = interval_gcd(&tree, l, r, &error);
+        int res = interval_gcd(tree, l, r, &error);
         if (error || printf("%d\n", res) < 0) { 
             status = EXIT_FAILURE;
             break;
@@ -49,7 +48,8 @@ int main() {
     }
 
     free(array);
-    table_free(&tree);
+    table_free(tree);
+    free(tree);
     return status;
     return 0;
 }

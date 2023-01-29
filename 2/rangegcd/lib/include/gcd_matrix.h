@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "log_table.h"
 
-LogTable get_gcd_table(table_item_t *array, size_t length, bool *error);
+LogTable *get_gcd_table(table_item_t *array, size_t length);
 
 size_t interval_gcd(LogTable *table, size_t l, size_t r, bool *error);
 
