@@ -21,6 +21,7 @@ void test_gcd_matrix(void) {
         TEST_ASSERT_EQUAL(3, get_item(gcd_table, 0, 0));
 
         table_free(gcd_table);
+        free(gcd_table);
     }
     {
         table_item_t array[2] = {-3, 9};
@@ -30,6 +31,7 @@ void test_gcd_matrix(void) {
         TEST_ASSERT_EQUAL(9, get_item(gcd_table, 0, 1));
 
         table_free(gcd_table);
+        free(gcd_table);
     }
     {   
         table_item_t array[9] = {-3, 1, 5, 10, 13, 26, -52, 0, 10};
@@ -59,6 +61,7 @@ void test_gcd_matrix(void) {
         TEST_ASSERT_EQUAL(10, get_item(gcd_table, 0, 8));
         
         table_free(gcd_table);
+        free(gcd_table);
     }
 }
 
@@ -73,6 +76,7 @@ void test_interval_gcd(void) {
         TEST_ASSERT_FALSE(error);
 
         table_free(gcd_table);
+        free(gcd_table);
     }
     {
         table_item_t array[2] = {-3, 9};
@@ -90,6 +94,7 @@ void test_interval_gcd(void) {
         TEST_ASSERT_FALSE(error);
         
         table_free(gcd_table);
+        free(gcd_table);
     }
 
     {
@@ -120,6 +125,7 @@ void test_interval_gcd(void) {
         TEST_ASSERT_FALSE(error);
 
         table_free(gcd_table);
+        free(gcd_table);
     }
 }
 

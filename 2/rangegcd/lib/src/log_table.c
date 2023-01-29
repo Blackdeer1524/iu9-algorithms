@@ -26,7 +26,8 @@ LogTable *table_build(size_t n_cols) {
         table->data[i] = malloc(sizeof(table_item_t) * n_cols);
         if (table->data[i] == NULL) {
             table_free(table);
-            break;
+            free(table);
+            return NULL;
         }
         n_cols = (n_cols + 1) >> 1;
     }

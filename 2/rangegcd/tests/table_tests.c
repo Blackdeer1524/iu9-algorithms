@@ -22,6 +22,7 @@ void setUp(void) {
 
 void tearDown(void) {
     table_free(table);
+    free(table);
 }
 
 

@@ -19,7 +19,7 @@ size_t *precompute_log2(size_t x) {
         return NULL;
     }
     precomputed_table[0] = 0;
-    if (x == 1) {
+    if (x == 0) {
         return precomputed_table;
     }
     precomputed_table[1] = 0;
