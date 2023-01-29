@@ -139,7 +139,21 @@ void tokenize(const char *sentence, size_t sentence_length) {
                 &identifier_tree_node);
 
         // printf("<%s> type: %d; value:%d\n", buffer, next_lexem.tag, next_lexem.value);
-        printf("%d %d\n", next_lexem.tag, next_lexem.value);
+        switch (next_lexem.tag)
+        {
+        case CONST:
+            printf("%s ", "CONST");
+            break;
+        case SPEC:
+            printf("%s ", "SPEC");
+            break;
+        case IDENT:
+            printf("%s ", "IDENT");
+            break;
+        default:
+            break;
+        }
+        printf("%d\n", next_lexem.value);
         next_token_start += new_token_length;
     }
     free_tree(identifier_tree_node);

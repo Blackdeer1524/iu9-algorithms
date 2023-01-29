@@ -4,14 +4,19 @@
 #include "lexer.h"
 
 int main() {
-    char *sentence = NULL;
-    size_t allocated_size = 0;
-
-    signed long long actual_length;
-    if ((actual_length = getline(&sentence, &allocated_size, stdin)) == -1) {
+    size_t sentence_length;
+    if (scanf("%zu", &sentence_length) != 1) {
         return EXIT_FAILURE;
-    } 
-    sentence[actual_length - 1] = '\0';
-    tokenize(sentence, strlen(sentence));
+    }
+    getchar();
+    size_t placeholder = sentence_length;
+    char *sentence = malloc((++sentence_length) * sizeof(char));
+    if (getline(&sentence, &placeholder, stdin) == -1) {
+        free(sentence);
+        return EXIT_FAILURE;
+    }
+    sentence[sentence_length - 1] = '\0';
+    tokenize(sentence, sentence_length);
+    free(sentence);
     return EXIT_SUCCESS;
 }
