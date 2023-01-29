@@ -452,14 +452,14 @@ void tokenize(const char *sentence, size_t sentence_length) {
 
 
 int main() {
-    char *sentence = NULL;
-    size_t allocated_size = 0;
-
-    signed long long actual_length;
-    if ((actual_length = getline(&sentence, &allocated_size, stdin)) == -1) {
+    size_t sentence_length;
+    if (scanf("%zu", &sentence_length) != 1) {
         return EXIT_FAILURE;
-    } 
-    sentence[actual_length - 1] = '\0';
-    tokenize(sentence, strlen(sentence));
+    }
+
+    char *sentence = malloc((sentence_length + 1) * sizeof(char));
+    sentence[sentence_length] = '\0';
+    tokenize(sentence, sentence_length);
+    free(sentence);
     return EXIT_SUCCESS;
 }
